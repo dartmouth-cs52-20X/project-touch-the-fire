@@ -18,33 +18,42 @@ The first team to score 3 points wins the game.
 
 ## Architecture
 
-### Frontend
-
-### Backend
-
 * Socket.io
     * Used to communicate between the server and the browser
 * Express
+    * Used to handle multiple requests server-side
 * Webpack
-
-TODO:  descriptions of code organization and tools and libraries used
-- Mongo
-- React
-- NodeJS
+    * Used for compilation
 
 ## Setup
 
-TODO: how to get the project dev environment up and running, npm install etc
+This project requires both the code in this repo and the [server repo](https://github.com/dartmouth-cs52-20X/project-api-touch-the-fire)
 
-- yarn add socket.io, express, webpack
-- yarn start
-- yarn dev
-- yarn build
+### This Repo
+
+The game is hosted on port 8080.
+
+- `yarn install`
+- `yarn start`
+
+### Server Repo
+
+The server is hosted on port 9090.
+
+- `yarn install`
+- `yarn dev`
 
 ## Deployment
 
-TODO: how to deploy the project
-- yarn deploy
+### This Repo
+
+- `yarn deploy`
+
+### Server Repo
+
+The server is hosted through Heroku.
+
+- `git push origin master`
 
 ## Authors
 
