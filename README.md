@@ -24,7 +24,8 @@ The first team to score 3 points wins the game.
 
 * Socket.io
     * Used to communicate between the server and the browser
-* 
+* Express
+* Webpack
 
 TODO:  descriptions of code organization and tools and libraries used
 - Mongo
@@ -35,6 +36,9 @@ TODO:  descriptions of code organization and tools and libraries used
 
 TODO: how to get the project dev environment up and running, npm install etc
 
+- yarn add express
+- yarn add socket.io
+- yarn add webpack
 - yarn start
 - yarn dev
 - yarn build
