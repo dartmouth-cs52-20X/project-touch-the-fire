@@ -1,4 +1,4 @@
-import { connect, play } from './networking';
+import { connect, play, chat } from './networking';
 import { startRendering, stopRendering } from './render';
 import { startCapturingInput, stopCapturingInput } from './input';
 import { initState } from './state';
