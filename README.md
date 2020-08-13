@@ -36,9 +36,7 @@ TODO:  descriptions of code organization and tools and libraries used
 
 TODO: how to get the project dev environment up and running, npm install etc
 
-- yarn add express
-- yarn add socket.io
-- yarn add webpack
+- yarn add socket.io, express, webpack
 - yarn start
 - yarn dev
 - yarn build
