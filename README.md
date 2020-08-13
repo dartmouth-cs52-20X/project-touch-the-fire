@@ -29,7 +29,7 @@ The first team to score 3 points wins the game.
 
 This project requires both the code in this repo and the [server repo](https://github.com/dartmouth-cs52-20X/project-api-touch-the-fire)
 
-### This Repo
+### Client Repo
 
 The game is hosted on port 8080.
 
@@ -45,7 +45,7 @@ The server is hosted on port 9090.
 
 ## Deployment
 
-### This Repo
+### Client Repo
 
 - `yarn deploy`
 
