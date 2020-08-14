@@ -9,6 +9,9 @@ const context = canvas.getContext('2d');
 const hanlonhead = new Image();
 hanlonhead.src = 'https://www.dartblog.com/images/Hanlon1.jpg';
 
+const fire = new Image();
+fire.src = 'https://www.nicepng.com/png/full/824-8249426_fire-svg-png-icon-free-download-onlinewebfonts-flame.png';
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -20,6 +23,7 @@ function renderPlayer(me, player) {
   context.save();
   context.translate(canvasX, canvasY);
   context.rotate(direction);
+  // context.imageSmoothingEnabled = false;
   context.drawImage(
     hanlonhead,
     -PLAYER_RADIUS,
@@ -27,6 +31,7 @@ function renderPlayer(me, player) {
     PLAYER_RADIUS * 2,
     PLAYER_RADIUS * 2,
   );
+
   context.restore();
 }
 
@@ -45,6 +50,8 @@ function renderBackground(x, y) {
   backgroundGradient.addColorStop(1, 'gray');
   context.fillStyle = backgroundGradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
+
+  context.drawImage(fire, backgroundX, backgroundY, 50, 100);
 }
 
 function render() {
