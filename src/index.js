@@ -2,6 +2,7 @@ import { connect, play } from './networking';
 import { startRendering, stopRendering } from './render';
 import { startCapturingInput, stopCapturingInput } from './input';
 import { initState } from './state';
+import { setLeaderboardHidden } from './leaderboard';
 
 const signIn = document.getElementById('sign-in');
 const playButton = document.getElementById('play-button');
@@ -11,6 +12,7 @@ function onGameOver() {
   stopCapturingInput();
   stopRendering();
   signIn.classList.remove('hidden');
+  setLeaderboardHidden(true);
 }
 
 Promise.all([
@@ -25,5 +27,6 @@ Promise.all([
     initState();
     startCapturingInput();
     startRendering();
+    setLeaderboardHidden(false);
   };
 });

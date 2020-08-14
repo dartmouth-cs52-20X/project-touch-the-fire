@@ -1,3 +1,5 @@
+import { updateLeaderboard } from './leaderboard';
+
 const RENDER_DELAY = 100;
 
 const gameUpdates = [];
@@ -30,6 +32,7 @@ export function processGameUpdate(update) {
   }
   gameUpdates.push(update);
 
+  updateLeaderboard(update.leaderboard);
   // Keep only one game update before the current server time
   const base = getBaseUpdate();
   if (base > 0) {
