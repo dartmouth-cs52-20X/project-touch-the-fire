@@ -18,6 +18,15 @@ export const connect = (onGameOver) => (
   })
 );
 
+// TODO: Write function to collect message from client to send
+// TODO: Post received messages into client instead of console
+
+export const chat = () => {
+  socket.on(Constants.MSG_TYPES.CHAT, data => {
+    console.log(data)
+  })
+}
+
 export const play = (username) => {
   socket.emit(Constants.MSG_TYPES.JOIN_GAME, username);
 };

@@ -11,5 +11,6 @@ module.exports = Object.freeze({
     GAME_UPDATE: 'update',
     INPUT: 'input',
     GAME_OVER: 'dead',
+    CHAT: 'chat-message'
   },
 });
