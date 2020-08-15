@@ -16,6 +16,10 @@ If neither team reaches the fire, a sudden death round occurs in which two rando
 
 The first team to score 3 points wins the game.
 
+Below is a demo of our [figma design](https://www.figma.com/proto/NYXJshUJ5rrsdHEr0mKjZ0/Connections?node-id=39%3A42&scaling=min-zoom)
+
+![](figma_demo.gif)
+
 ## Architecture
 
 * Socket.io
