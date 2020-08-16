@@ -22,15 +22,19 @@ export const connect = (onGameOver) => (
 // TODO: Post received messages into client instead of console
 
 export const chat = () => {
-  socket.on(Constants.MSG_TYPES.CHAT, data => {
-    console.log(data)
-  })
-}
+  socket.on(Constants.MSG_TYPES.CHAT, (data) => {
+    console.log(data);
+  });
+};
 
 export const play = (username) => {
   socket.emit(Constants.MSG_TYPES.JOIN_GAME, username);
 };
 
-export const updateDirection = (dir) => {
-  socket.emit(Constants.MSG_TYPES.INPUT, dir);
+export const updateDirection = (dir, move) => {
+  const packageMoveDir = { dr: dir, mv: move };
+  console.log('new imp');
+  console.log(packageMoveDir);
+  // to server js
+  socket.emit(Constants.MSG_TYPES.INPUT, packageMoveDir);
 };

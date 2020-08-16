@@ -5,32 +5,55 @@ import { updateDirection } from './networking';
   Keycodes: 40 - Down, 37 - Left, 38 - Up, 39 - Right
 */
 
+// This function takes care of user movement
 export function startCapturingInput() {
+  // key codes + direction pairs are used to change direction based on input
+
+  // as specified it currently supports wasd and arrow key movement
   const dirKeys = {
-    37: -Math.PI / 2,
-    38: 0,
-    39: Math.PI / 2,
-    40: Math.PI,
+    37: -Math.PI / 2, // left
+    38: 0, // up
+    39: Math.PI / 2, // right
+    40: Math.PI, // down
+    65: -Math.PI / 2, // a
+    87: 0, // w
+    68: Math.PI / 2, // d
+    83: Math.PI, // s
   };
+
   const listKeysPressed = {};
+  let newDir = 0;
+  console.log(listKeysPressed);
+  // this checks to see if any keys have been pressed
   window.addEventListener('keydown', (event) => {
+    newDir = 0;
     listKeysPressed[event.keyCode] = true;
     console.log(listKeysPressed);
-    let newDir = 0;
+
+    // sums up the values and averages them to get the new direction
     Object.keys(listKeysPressed).forEach((key) => {
       newDir += Math.abs(dirKeys[key]);
     });
     newDir /= Object.keys(listKeysPressed).length;
 
-    if (37 in listKeysPressed) {
+    if (37 in listKeysPressed || 65 in listKeysPressed) {
       newDir *= -1;
     }
 
-    updateDirection(newDir);
+    console.log('happening');
+    updateDirection(newDir, 1);
+    console.log(newDir);
   });
 
   window.addEventListener('keyup', (event) => {
     delete listKeysPressed[event.keyCode];
+    console.log('fake news');
+    console.log(listKeysPressed);
+
+    if (Object.keys(listKeysPressed).length === 0) {
+      console.log('not happening');
+      updateDirection(newDir, 0);
+    }
   });
 }
 
