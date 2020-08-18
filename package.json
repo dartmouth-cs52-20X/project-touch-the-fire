@@ -47,6 +47,8 @@
     "@ion-phaser/core": "^1.2.3",
     "@ion-phaser/react": "^1.2.2",
     "axios": "^0.19.2",
+    "firebase": "^7.18.0",
+    "firebase-admin": "^9.1.0",
     "jquery": "^3.5.1",
     "lodash.debounce": "^4.0.8",
     "phaser": "^3.24.1",
