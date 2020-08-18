@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import fbase from '../config/fire';
@@ -30,6 +31,11 @@ class SignIn extends Component {
     });
   }
 
+  handleGuestLogin(event) {
+    event.preventDefault();
+    fbase.auth().signInAnonymously().then((u) => { console.log(u); }).catch((err) => { console.log(err); });
+  }
+
   render() {
     return (
       <div>
@@ -40,6 +46,7 @@ class SignIn extends Component {
           <button type="button" onClick={this.handleSignInPress}>Sign In</button>
         </form>
         <p>New to Touch the Fire? Create an account <NavLink to="/signup">here!</NavLink></p>
+        <button type="button" onClick={this.handleGuestLogin}>Play as Guest</button>
       </div>
     );
   }
