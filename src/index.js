@@ -1,32 +1,23 @@
-import { connect, play } from './networking';
-import { startRendering, stopRendering } from './render';
-import { startCapturingInput, stopCapturingInput } from './input';
-import { initState } from './state';
-import { setLeaderboardHidden } from './leaderboard';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 
-const signIn = document.getElementById('sign-in');
-const playButton = document.getElementById('play-button');
-const usernameInput = document.getElementById('username');
+import reducers from './reducers';
 
-function onGameOver() {
-  stopCapturingInput();
-  stopRendering();
-  signIn.classList.remove('hidden');
-  setLeaderboardHidden(true);
-}
+import App from './components/app';
 
-Promise.all([
-  connect(onGameOver),
-]).then(() => {
-  signIn.classList.remove('hidden');
-  usernameInput.focus();
+// this creates the store with the reducers, and does some other stuff to initialize devtools
+// boilerplate to copy, don't have to know
+const store = createStore(reducers, {}, compose(
+  applyMiddleware(),
+  window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : (f) => f,
+));
 
-  playButton.onclick = () => {
-    play(usernameInput.value);
-    signIn.classList.add('hidden');
-    initState();
-    startCapturingInput();
-    startRendering();
-    setLeaderboardHidden(false);
-  };
-});
+// we now wrap App in a Provider
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('main'),
+);
