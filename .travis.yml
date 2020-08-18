@@ -5,4 +5,4 @@ install:
   - yarn --ignore-engines
 script:
   - yarn deploy
-  if: branch = master
+    if: branch = master
