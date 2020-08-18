@@ -16,7 +16,7 @@ class GameScene extends Scene {
   }
 
   create() {
-    this.socket = io('http://localhost:9090');
+    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', (players) => {
