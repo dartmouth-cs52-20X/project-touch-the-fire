@@ -1,9 +1,9 @@
 {
-  "name": "sa6-qspraut",
+  "name": "touch-the-fire",
   "version": "1.0.0",
   "main": "src/index.js",
-  "repository": "git@github.com:dartmouth-cs52-20X/starterpack-qspraut",
-  "author": "Quinn Spraut <quinn.a.spraut.22@dartmouth.edu>",
+  "repository": "git@github.com:dartmouth-cs52-20X/touch-the-fire",
+  "author": "Suraj Srivats <suraj.srivats.22@dartmouth.edu>",
   "license": "MIT",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server",
