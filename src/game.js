@@ -1,31 +1,34 @@
-/* eslint-disable no-use-before-define */
-import React from 'react';
+/* eslint-disable react/state-in-constructor */
+import React, { Component } from 'react';
 import Phaser from 'phaser';
 import { IonPhaser } from '@ion-phaser/react';
 import GameScene from './scenes/gamescene';
 
-const config = {
-  type: Phaser.AUTO,
-  parent: 'phaser-parent',
-  width: '100%',
-  height: '100%',
-  physics: {
-    default: 'arcade',
-    arcade: {
-      debug: false,
-      gravity: { y: 0 },
+class Game extends Component {
+  state = {
+    initialize: true,
+    game: {
+      type: Phaser.AUTO,
+      parent: 'phaser-parent',
+      width: '100%',
+      height: '100%',
+      physics: {
+        default: 'arcade',
+        arcade: {
+          debug: false,
+          gravity: { y: 0 },
+        },
+      },
+      scene: [GameScene],
     },
-  },
-  scene: [GameScene],
-};
+  };
 
-// eslint-disable-next-line no-unused-vars
-const game = new Phaser.Game(config);
-
-const Game = () => {
-  return (
-    <IonPhaser game={game} />
-  );
-};
+  render() {
+    const { initialize, game } = this.state;
+    return (
+      <IonPhaser game={game} initialize={initialize} />
+    );
+  }
+}
 
 export default Game;
