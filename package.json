@@ -1,16 +1,16 @@
 {
-  "name": "starterpack-bibaswan-khadka",
+  "name": "touch-the-fire",
   "version": "1.0.0",
   "main": "src/index.js",
-  "repository": "https://github.com/dartmouth-cs52-20X/starterpack-bibaswan-khadka.git",
-  "author": "bibaswan-khadka <bibaswan.khadka.22@dartmouth.edu>",
+  "repository": "https://github.com/dartmouth-cs52-20X/touch-the-fire.git",
+  "author": "suraj.srivats.22@dartmouth.edu>",
   "license": "MIT",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server",
     "test": "eslint src/**.js",
     "build": "yarn clean; NODE_ENV=production webpack --colors",
     "clean": "rimraf dist",
-    "deploy": "yarn build; surge -p dist -d bibaswankhadka-cs52-reduxstarter.surge.sh; yarn clean"
+    "deploy": "yarn build; surge -p dist -d touch-the-fire.surge.sh; yarn clean"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
