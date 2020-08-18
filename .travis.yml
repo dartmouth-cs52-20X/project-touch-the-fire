@@ -3,6 +3,9 @@ node_js:
   - "13"
 install:
   - yarn --ignore-engines
-script:
-  - yarn deploy
-    if: branch = master
+deploy:
+  provider: surge
+  project: ./dist/
+  domain: touch-the-fire.surge.sh
+  on:
+    branch: master
