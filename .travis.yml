@@ -3,6 +3,8 @@ node_js:
   - "13"
 install:
   - yarn --ignore-engines
+script:
+  - yarn build
 deploy:
   provider: surge
   project: ./dist/
