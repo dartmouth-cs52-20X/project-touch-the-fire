@@ -1,41 +1,13 @@
-<!-- lll -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TouchTheFire.io</title>
-  <base href="/">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    .hidden {display: none}
-  </style>>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <canvas id="game-canvas"></canvas>
-  <script async src="/game.js"></script>
-  <script defer src = "http://localhost:9090/socket.io/socket.io.js"></script>
-  <div id="sign-in" class="hidden">
-    <input type="text" id="username" placeholder="Username" />
-    <button id="play-button">PLAY</button>
-  </div>
-  <div id="leaderboard" class="hidden">
-    <table>
-      <tr>
-        <th>Username</th>
-        <th>Score</th>
-      </tr>
-      <tr><td></td><td></td></tr>
-      <tr><td></td><td></td></tr>
-      <tr><td></td><td></td></tr>
-      <tr><td></td><td></td></tr>
-      <tr><td></td><td></td></tr>
-    </table>
-  </div>
-</body>
+<html>
+  <head>
+    <title>starter pack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  </head>
+  <body>
+    <div class="logo"></div>
+    <div id="main"></div>
+    <div id="phaser-parent"></div>
+  </body>
 </html>

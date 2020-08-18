@@ -1,10 +1,7 @@
-const path = require('path');
+const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const autoprefixer = require('autoprefixer');
-const imageminPngquant = require('imagemin-pngquant');
-const imageminSvgo = require('imagemin-svgo');
-const imageminMozjpeg = require('imagemin-mozjpeg');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
 const env = process.env.NODE_ENV || 'development';
 // set to 'production' or 'development' in your env
@@ -12,31 +9,21 @@ const env = process.env.NODE_ENV || 'development';
 const finalCSSLoader = (env === 'production') ? MiniCssExtractPlugin.loader : { loader: 'style-loader' };
 
 module.exports = {
-  mode: env,
-  output: {
-    filename: '[name].[hash].js',
-    path: path.resolve(__dirname, 'dist'),
-  },
-  entry: {
-    game: './src/index.js',
-  }, // this is where our app lives
-  devtool: 'source-map', // this enables debugging with source in chrome devtools
   devServer: {
     hot: true,
     historyApiFallback: true,
   },
+  mode: env,
+  output: { publicPath: '/' },
+  entry: ['./src'], // this is where our app lives
+  devtool: 'source-map', // this enables debugging with source in chrome devtools
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env'],
-            },
-          },
+          { loader: 'babel-loader' },
           { loader: 'eslint-loader' },
         ],
       },
@@ -75,35 +62,12 @@ module.exports = {
               name: '[name].[ext]',
             },
           },
-          {
-            loader: 'img-loader',
-            options: {
-              plugins: [
-                imageminMozjpeg({
-                  progressive: true,
-                  arithmetic: false,
-                }),
-                imageminPngquant({
-                  floyd: 0.5,
-                  speed: 2,
-                }),
-                imageminSvgo({
-                  plugins: [
-                    { removeTitle: true },
-                    { convertPathData: false },
-                  ],
-                }),
-              ],
-            },
-          },
         ],
       },
     ],
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name].[hash].css',
-    }),
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: './index.html',
@@ -111,6 +75,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: './200.html',
+    }),
+    new ImageminPlugin({
+      disable: false,
+      pngquant: {
+        quality: '95-100',
+      },
     }),
   ],
 };

@@ -6,7 +6,6 @@
         "es6": true
     },
     "rules": {
-        // "linebreak-style": ["error", "windows"],
         "strict": 0,
         "quotes": [2, "single"],
         "no-else-return": 0,
