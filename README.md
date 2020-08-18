@@ -20,6 +20,8 @@ The first team to score 3 points wins the game.
 
 * Socket.io
     * Used to communicate between the server and the browser
+* Phaser.js
+    * Game engine software
 * Express
     * Used to handle multiple requests server-side
 * Webpack
