@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
 import logo from '../logo.png';
+import green from '../assets/green.png';
 
 class GameScene extends Scene {
   constructor() {
@@ -16,13 +17,15 @@ class GameScene extends Scene {
     this.load.image('ship', spaceshipred);
     this.load.image('money', money);
     this.load.image('logo', logo);
+    this.load.image('green', green);
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'logo').setDisplaySize(this.game.canvas.width, this.game.canvas.height);
+    this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'green').setDisplaySize(this.game.canvas.width, this.game.canvas.height);
+
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
@@ -140,14 +143,18 @@ class GameScene extends Scene {
           this.cameras.main.shake();
         } else if (x > this.game.canvas.width || x < 0) {
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.y, rotation: this.ship.rotation });
-          // console.log('x cross');
           this.ship.x = this.ship.oldPosition.x;
           this.cameras.main.shake();
+          // console.log('x cross');
+          // console.log(this.ship.x);
+          // console.log(this.game.canvas.width);
         } else if (y > this.game.canvas.height || y < 0) {
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
-          // console.log('y cross');
           this.ship.y = this.ship.oldPosition.y;
           this.cameras.main.shake();
+          // console.log('y cross');
+          // console.log(this.ship.y);
+          // console.log(this.game.canvas.height);
         } else {
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
           // console.log('neither cross');
