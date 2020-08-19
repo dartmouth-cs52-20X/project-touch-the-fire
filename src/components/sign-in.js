@@ -31,7 +31,7 @@ class SignIn extends Component {
     }).catch((err) => {
       console.log(err);
     });
-    this.props.signIn(fbase.auth().currentUser.displayName)
+    this.props.signIn(fbase.auth().currentUser.displayName);
   }
 
   handleGuestLogin(event) {
