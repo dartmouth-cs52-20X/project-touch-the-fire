@@ -2,11 +2,7 @@ import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
-import { connect } from 'react-redux';
-
-const mapStateToProps = (State) => ({
-  username: State.username,
-});
+import logo from '../logo.png';
 
 class GameScene extends Scene {
   constructor() {
@@ -18,14 +14,14 @@ class GameScene extends Scene {
   preload() {
     this.load.image('ship', spaceshipred);
     this.load.image('money', money);
+    this.load.image('logo', logo);
   }
+  
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    this.socket.on('connect', () => { 
-      console.log('socket.io connected'); 
-      this.socket.emit('username', this.props.username)
-    });
+    this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'logo').setDisplaySize(this.game.canvas.width, this.game.canvas.height);
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
@@ -57,8 +53,8 @@ class GameScene extends Scene {
         }
       });
     });
-    this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
-    this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#008000' });
+    this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#008000' }).setScrollFactor(0);
     this.socket.on('scoreUpdate', (scores) => {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
       this.redScoreText.setText(`Green: ${scores.red}`);
@@ -93,6 +89,7 @@ class GameScene extends Scene {
     this.ship.setDrag(100);
     this.ship.setAngularDrag(100);
     this.ship.setMaxVelocity(200);
+    this.cameras.main.startFollow(this.ship);
   }
 
   update() {
@@ -128,4 +125,4 @@ class GameScene extends Scene {
   }
 }
 
-export default connect(mapStateToProps, null)(GameScene);
+export default GameScene;
