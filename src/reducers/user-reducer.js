@@ -1,9 +1,9 @@
 import { ActionTypes } from '../actions';
 
-const CountReducer = (state = 0, action) => {
+const UserReducer = (state = 0, action) => {
   switch (action.type) {
-    case ActionTypes.INCREMENT:
-      return state + 1;
+    case ActionTypes.SIGNIN:
+      return {username: action.payload};
     case ActionTypes.DECREMENT:
       return state - 1;
     default:
