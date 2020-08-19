@@ -1,7 +1,5 @@
 # Touch the Fire
-
 ![Team Photo](Insert a Team Photo URL here)
-[*how?*](https://help.github.com/articles/about-readmes/#relative-links-and-image-paths-in-readme-files)
 
 Touch the Fire is a WASD multiplayer game with two teams of 3-5 players (students and defenders). The goal of the students is to get one player to touch the fire, and the goal of the defenders is to prevent anyone from touching the fire. 
 
@@ -20,27 +18,31 @@ The first team to score 3 points wins the game.
 
 * Socket.io
     * Used to communicate between the server and the browser
-* Phaser.js
-    * Game engine software
 * Express
     * Used to handle multiple requests server-side
 * Webpack
     * Used for compilation
+* Phaser.js
+    * Library to handle game function
 
 ## Setup
 
-This project requires both the code in this repo and the [server repo](https://github.com/dartmouth-cs52-20X/project-api-touch-the-fire)
+This project requires both the code in this repo and the [client repo](https://github.com/dartmouth-cs52-20X/project-touch-the-fire)
 
 ### Client Repo
 
-The game is hosted on port 8080.
+Find our dev site [here.](http://touch-the-fire.surge.sh/)
+
+The game is hosted locally on port 8080.
 
 - `yarn install`
 - `yarn start`
 
 ### Server Repo
 
-The server is hosted on port 9090.
+Find our dev server [here.](https://touch-the-fire-api.herokuapp.com/)
+
+The server is hosted locally on port 9090.
 
 - `yarn install`
 - `yarn dev`
@@ -49,7 +51,7 @@ The server is hosted on port 9090.
 
 ### Client Repo
 
-- `yarn deploy`
+To push to the dev site, simply push to `origin master`. Travis takes care of the rest.
 
 ### Server Repo
 
@@ -68,4 +70,5 @@ The server is hosted through Heroku.
 
 ## Acknowledgments
 
-# test travis
+### Testing
+heroku deploy test
