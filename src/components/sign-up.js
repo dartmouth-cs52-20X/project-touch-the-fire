@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import fbase from '../config/fire';
+import { signIn } from '../actions';
 
 class SignUp extends Component {
   constructor(props) {
@@ -36,6 +38,7 @@ class SignUp extends Component {
     }).catch((err) => {
       console.log(err);
     });
+    this.props.signIn(fbase.auth().currentUser.displayName)
   }
 
   handleGuestLogin(event) {
@@ -60,4 +63,4 @@ class SignUp extends Component {
   }
 }
 
-export default SignUp;
+export default connect(null, { signIn })(SignUp);

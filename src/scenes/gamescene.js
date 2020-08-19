@@ -2,6 +2,11 @@ import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
+import { connect } from 'react-redux';
+
+const mapStateToProps = (State) => ({
+  username: State.username,
+});
 
 class GameScene extends Scene {
   constructor() {
@@ -17,7 +22,10 @@ class GameScene extends Scene {
 
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.socket.on('connect', () => { 
+      console.log('socket.io connected'); 
+      this.socket.emit('username', this.props.username)
+    });
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
@@ -120,4 +128,4 @@ class GameScene extends Scene {
   }
 }
 
-export default GameScene;
+export default connect(mapStateToProps, null)(GameScene);

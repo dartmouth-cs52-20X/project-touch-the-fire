@@ -1,13 +1,12 @@
 // keys for actiontypes
 export const ActionTypes = {
-  INCREMENT: 'INCREMENT',
-  DECREMENT: 'DECREMENT',
+  SIGNIN: 'SIGNIN',
 };
 
-export function increment() {
+export function signIn(username) {
   return {
-    type: ActionTypes.INCREMENT,
-    payload: null,
+    type: ActionTypes.SIGNIN,
+    payload: username,
   };
 }
 
