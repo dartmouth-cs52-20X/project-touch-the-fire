@@ -5,6 +5,9 @@ import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
 import logo from '../logo.png';
 import green from '../assets/green.png';
+import fire from '../assets/fire.png';
+
+const MAP_VIEW_MULT = 2;
 
 class GameScene extends Scene {
   constructor() {
@@ -18,14 +21,15 @@ class GameScene extends Scene {
     this.load.image('money', money);
     this.load.image('logo', logo);
     this.load.image('green', green);
+    this.load.image('fire', fire);
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'green').setDisplaySize(this.game.canvas.width, this.game.canvas.height);
-
+    this.add.image(this.game.canvas.width, this.game.canvas.height, 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
+    this.add.image(this.game.canvas.width, this.game.canvas.height + 60, 'fire').setDisplaySize(50, 65);
     this.otherPlayers = this.physics.add.group();
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
@@ -130,31 +134,31 @@ class GameScene extends Scene {
         this.ship.setVelocityY(0);
       }
 
-      this.physics.world.wrap(this.ship, 5);
+      // this.physics.world.wrap(this.ship, 5);
       const { x } = this.ship;
       const { y } = this.ship;
       const r = this.ship.rotation;
       if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)) {
-        if ((x > this.game.canvas.width || x < 0) && (y > this.game.canvas.height || y < 0)) {
+        if ((x > this.game.canvas.width * MAP_VIEW_MULT || x < 0) && (y > this.game.canvas.height * MAP_VIEW_MULT || y < 0)) {
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
           // console.log('both');
           this.ship.x = this.ship.oldPosition.x;
           this.ship.y = this.ship.oldPosition.y;
           this.cameras.main.shake();
-        } else if (x > this.game.canvas.width || x < 0) {
+        } else if (x > this.game.canvas.width * MAP_VIEW_MULT || x < 0) {
+          // console.log('x cross');
+          // console.log(x);
+          // console.log(this.game.canvas.width);
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.y, rotation: this.ship.rotation });
           this.ship.x = this.ship.oldPosition.x;
           this.cameras.main.shake();
-          // console.log('x cross');
-          // console.log(this.ship.x);
-          // console.log(this.game.canvas.width);
-        } else if (y > this.game.canvas.height || y < 0) {
+        } else if (y > this.game.canvas.height * MAP_VIEW_MULT || y < 0) {
+          // console.log('y cross');
+          // console.log(y);
+          // console.log(this.game.canvas.height);
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
           this.ship.y = this.ship.oldPosition.y;
           this.cameras.main.shake();
-          // console.log('y cross');
-          // console.log(this.ship.y);
-          // console.log(this.game.canvas.height);
         } else {
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
           // console.log('neither cross');
