@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
 import logo from '../logo.png';
+import fbase from '../config/fire';
 
 class GameScene extends Scene {
   constructor() {
@@ -18,12 +19,25 @@ class GameScene extends Scene {
     this.load.image('logo', logo);
   }
 
+  handleAuthChange = () => {
+    fbase.auth().onAuthStateChanged((user) => {
+      console.log(user.displayName);
+      if (user) {
+        return user;
+      } else {
+        return null;
+      }
+    });
+  }
+
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.add.image(this.game.canvas.width / 2, this.game.canvas.height / 2, 'logo').setDisplaySize(this.game.canvas.width, this.game.canvas.height);
     this.otherPlayers = this.physics.add.group();
+    const username = this.handleAuthChange();
+    this.socket.emit('username', username);
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
       Object.keys(players).forEach((id) => {
