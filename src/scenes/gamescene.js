@@ -19,7 +19,7 @@ class GameScene extends Scene {
     this.load.image('ship', spaceshipred);
     this.load.image('money', money);
   }
-
+  /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { 
