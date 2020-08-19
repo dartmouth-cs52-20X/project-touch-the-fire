@@ -132,7 +132,26 @@ class GameScene extends Scene {
       const { y } = this.ship;
       const r = this.ship.rotation;
       if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)) {
-        this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
+        if ((x > this.game.canvas.width || x < 0) && (y > this.game.canvas.height || y < 0)) {
+          this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
+          // console.log('both');
+          this.ship.x = this.ship.oldPosition.x;
+          this.ship.y = this.ship.oldPosition.y;
+          this.cameras.main.shake();
+        } else if (x > this.game.canvas.width || x < 0) {
+          this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.y, rotation: this.ship.rotation });
+          // console.log('x cross');
+          this.ship.x = this.ship.oldPosition.x;
+          this.cameras.main.shake();
+        } else if (y > this.game.canvas.height || y < 0) {
+          this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
+          // console.log('y cross');
+          this.ship.y = this.ship.oldPosition.y;
+          this.cameras.main.shake();
+        } else {
+          this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
+          // console.log('neither cross');
+        }
       }
 
       // save old position data
