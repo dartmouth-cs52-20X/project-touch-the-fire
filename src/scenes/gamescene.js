@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import spaceshipred from '../assets/spaceshipred.png';
@@ -44,7 +45,11 @@ class GameScene extends Scene {
         }
       });
     });
-    this.cursors = this.input.keyboard.createCursorKeys();
+
+    // added wasd keys to movement
+    this.cursors = { ...this.input.keyboard.createCursorKeys(), ...this.input.keyboard.addKeys('W,S,A,D') };
+    console.log(this.cursors);
+
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
         if (playerInfo.playerId === otherPlayer.playerId) {
@@ -89,24 +94,39 @@ class GameScene extends Scene {
     this.ship.setDrag(100);
     this.ship.setAngularDrag(100);
     this.ship.setMaxVelocity(200);
+
+    // movement translational
     this.cameras.main.startFollow(this.ship);
   }
 
   update() {
     if (this.ship) {
-      if (this.cursors.left.isDown) {
-        this.ship.setAngularVelocity(-150);
-      } else if (this.cursors.right.isDown) {
-        this.ship.setAngularVelocity(150);
+      if (this.cursors.left.isDown || this.cursors.A.isDown) {
+        // this.ship.setAngularVelocity(-150);
+        this.ship.setVelocityX(-200);
+        this.ship.setRotation(Math.PI / 2);
+        // this.cameras.main.shake();
+      } else if (this.cursors.right.isDown || this.cursors.D.isDown) {
+        // this.ship.setAngularVelocity(150);
+        this.ship.setVelocityX(200);
+        this.ship.setRotation(-Math.PI / 2);
       } else {
         this.ship.setAngularVelocity(0);
+        this.ship.setVelocityX(0);
       }
 
-      if (this.cursors.up.isDown) {
-        this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
+      if (this.cursors.up.isDown || this.cursors.W.isDown) {
+        // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
+        this.ship.setVelocityY(-200);
+        this.ship.setRotation(Math.PI);
+      } else if (this.cursors.down.isDown || this.cursors.S.isDown) {
+        this.ship.setVelocityY(200);
+        this.ship.setRotation();
       } else {
-        this.ship.setAcceleration(0);
+        // this.ship.setAcceleration(0);
+        this.ship.setVelocityY(0);
       }
+
       this.physics.world.wrap(this.ship, 5);
       const { x } = this.ship;
       const { y } = this.ship;
