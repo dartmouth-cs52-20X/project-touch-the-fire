@@ -71,4 +71,4 @@ The server is hosted through Heroku.
 ## Acknowledgments
 
 ### Testing
-heroku deploy test
+heroku deploy test travis-boundary test
