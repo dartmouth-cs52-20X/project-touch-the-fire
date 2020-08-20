@@ -41,6 +41,8 @@ class GameScene extends Scene {
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.cameras.main.setBackgroundColor('#086100');
+
     this.add.image(this.game.canvas.width, this.game.canvas.height, 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.add.image(this.game.canvas.width, this.game.canvas.height + 60, 'fire').setDisplaySize(50, 65);
     this.otherPlayers = this.physics.add.group();
@@ -185,6 +187,7 @@ class GameScene extends Scene {
         x: this.ship.x,
         y: this.ship.y,
         rotation: this.ship.rotation,
+        // dba: this.ship.dba,
       };
     }
   }
