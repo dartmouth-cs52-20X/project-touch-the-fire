@@ -7,22 +7,35 @@ class Nav extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      user: {},
+    };
+  }
+
+  componentDidMount() {
+    this.handleAuthChange();
+  }
+
+  handleAuthChange() {
+    fbase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({ user });
+      } else {
+        this.setState({ user: null });
+      }
+    });
   }
 
   handleSignOut() {
     fbase.auth().signOut().then(() => {
       console.log('sign out success');
-      this.props.history.push('/');
     }).catch((error) => {
       console.log(error);
     });
   }
 
   renderAuthButtons() {
-    const user = fbase.auth().currentUser;
-
-    if (user) {
+    if (this.state.user) {
       return (
         <ul>
           <li><NavLink to="/"><button type="button" id="nav-signout" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>

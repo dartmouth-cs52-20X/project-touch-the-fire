@@ -36,6 +36,8 @@ class SignUp extends Component {
     }).catch((err) => {
       console.log(err);
     });
+
+    this.props.history.push('/');
   }
 
   handleGuestLogin(event) {
@@ -46,13 +48,13 @@ class SignUp extends Component {
   render() {
     return (
       <div>
-        <form className="sign-in-up no-user-bg">
+        <form className="landing-page-alt">
           <h1>Sign Up</h1>
-          <input type="text" placeholder="email" onChange={this.handleEmailChange} />
-          <input type="text" placeholder="username" onChange={this.handleUsernameChange} />
-          <input type="text" placeholder="password" onChange={this.handlePasswordChange} />
+          <div><input type="text" placeholder="email" onChange={this.handleEmailChange} /></div>
+          <div><input type="text" placeholder="username" onChange={this.handleUsernameChange} /></div>
+          <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
           <NavLink to="/"><button type="button" onClick={this.handleSignUpPress} className="button-var1">Sign Up</button></NavLink>
-          <p>Already have an account? Sign in <NavLink to="/signin">here!</NavLink></p>
+          <p>Already have an account? Sign in <NavLink to="/signin" className="here-link">here!</NavLink></p>
         </form>
       </div>
     );

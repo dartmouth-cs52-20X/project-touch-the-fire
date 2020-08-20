@@ -36,12 +36,12 @@ class SignIn extends Component {
   render() {
     return (
       <div>
-        <form className="sign-in-up no-user-bg">
+        <form className="landing-page-alt">
           <h1>Sign In</h1>
-          <input type="text" placeholder="email" onChange={this.handleEmailChange} />
-          <input type="text" placeholder="password" onChange={this.handlePasswordChange} />
+          <div><input type="text" placeholder="email" onChange={this.handleEmailChange} /></div>
+          <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
           <NavLink to="/"><button type="button" onClick={this.handleSignInPress} className="button-var1">Sign In</button></NavLink>
-          <p>New to Touch the Fire? Create an account <NavLink to="/signup">here!</NavLink></p>
+          <p>New to Touch the Fire? Create an account <NavLink to="/signup" className="here-link">here!</NavLink></p>
         </form>
       </div>
     );

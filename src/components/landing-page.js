@@ -65,10 +65,8 @@ class LandingPage extends Component {
       );
     } else {
       return (
-        <div className="landing-page no-user-bg">
-          <div>
-            <h1>TouchTheFire</h1>
-          </div>
+        <div className="landing-page-alt">
+          <h1>TouchTheFire</h1>
           <div>
             <NavLink to="/signin"><button type="button" className="button-var1">Sign In</button></NavLink>
           </div>
