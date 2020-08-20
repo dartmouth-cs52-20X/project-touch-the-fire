@@ -46,15 +46,14 @@ class SignUp extends Component {
   render() {
     return (
       <div>
-        <h1>Sign Up</h1>
-        <form>
+        <form className="sign-in-up no-user-bg">
+          <h1>Sign Up</h1>
           <input type="text" placeholder="email" onChange={this.handleEmailChange} />
           <input type="text" placeholder="username" onChange={this.handleUsernameChange} />
           <input type="text" placeholder="password" onChange={this.handlePasswordChange} />
-          <button type="button" onClick={this.handleSignUpPress}>Sign Up</button>
+          <NavLink to="/"><button type="button" onClick={this.handleSignUpPress} className="button-var1">Sign Up</button></NavLink>
+          <p>Already have an account? Sign in <NavLink to="/signin">here!</NavLink></p>
         </form>
-        <p>Already have an account? Sign in <NavLink to="/signin">here!</NavLink></p>
-        <button type="button" onClick={this.handleGuestLogin}>Play as Guest</button>
       </div>
     );
   }

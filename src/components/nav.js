@@ -13,6 +13,7 @@ class Nav extends Component {
   handleSignOut() {
     fbase.auth().signOut().then(() => {
       console.log('sign out success');
+      this.props.history.push('/');
     }).catch((error) => {
       console.log(error);
     });
@@ -24,7 +25,7 @@ class Nav extends Component {
     if (user) {
       return (
         <ul>
-          <li><button type="button" onClick={this.handleSignOut}>Sign Out</button></li>
+          <li><NavLink to="/"><button type="button" id="nav-signout" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>
         </ul>
       );
     } else {
@@ -40,12 +41,12 @@ class Nav extends Component {
   render() {
     return (
       <nav>
-        <ul>
-          <li><NavLink to="/" exact>Home</NavLink></li>
-          <li><NavLink to="/about">About</NavLink></li>
-          <li><NavLink to="/game">Game</NavLink></li>
-        </ul>
-        {this.renderAuthButtons()}
+        <div>
+          <NavLink to="/" id="nav-title"><h2><i className="fas fa-fire-alt" id="fire-icon" />TouchTheFire</h2></NavLink>
+        </div>
+        <div>
+          {this.renderAuthButtons()}
+        </div>
       </nav>
     );
   }

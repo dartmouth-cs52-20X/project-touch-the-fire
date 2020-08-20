@@ -1,17 +1,63 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body, html {
   font-family: "Roboto", sans-serif;
-  background: linear-gradient(to bottom, #87e0fd 0%,#53cbf1 40%,#05abe0 100%);
   height: 100%;
 }
 
-.active {
-  color: pink;
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 5vh;
+  background: #C4C4C4;
+  padding: 0px 10px;
 }
 
-.logo {
-  background-image: url('logo.png');
-  width: 100px;
-  height: 100px;
-  background-repeat: no-repeat;
-  background-size: contain;
+nav ul {
+  list-style-type: none;
+}
+
+#nav-signout {
+  border-radius: 20px;
+  border: none;
+  background: rgba($color: #000000, $alpha: 0.5);
+  padding: 8px;
+}
+
+#nav-title{
+  text-decoration: none;
+  font-family: 'Ribeye', cursive;
+  color: black;
+}
+
+#fire-icon {
+  color: rgb(255, 100, 0);
+}
+
+.landing-page, .sign-in-up {
+  display: flex;
+  width: 100%;
+  height: 95vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-var1 {
+  border-radius: 20px;
+  border: none;
+  background: rgba($color: #C4C4C4, $alpha: 0.5);
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.no-user-bg {
+  background: url(./assets/main-background.png);
+  background-size: cover;
 }

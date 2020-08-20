@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import '../style.scss';
 import {
@@ -8,13 +9,7 @@ import Game from '../game';
 import Nav from './nav';
 import SignIn from './sign-in';
 import SignUp from './sign-up';
-
-const About = (props) => {
-  return <div> All there is to know about me </div>;
-};
-const Welcome = (props) => {
-  return <div>Welcome</div>;
-};
+import LandingPage from './landing-page';
 
 const FallBack = (props) => {
   return <div>URL Not Found</div>;
@@ -27,16 +22,13 @@ class App extends Component {
     this.state = {
       user: {},
     };
-
-    this.handleAuthChange.bind(this);
-    this.renderUserName.bind(this);
   }
 
   componentDidMount() {
     this.handleAuthChange();
   }
 
-  handleAuthChange = () => {
+  handleAuthChange() {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
@@ -46,11 +38,9 @@ class App extends Component {
     });
   }
 
-  renderUserName() {
+  renderNav() {
     if (this.state.user) {
-      return (
-        <div>{this.state.user.displayName}</div>
-      );
+      return <Nav />;
     } else {
       return null;
     }
@@ -60,11 +50,9 @@ class App extends Component {
     return (
       <Router>
         <div>
-          {this.renderUserName()}
-          <Nav />
+          {this.renderNav()}
           <Switch>
-            <Route exact path="/" component={Welcome} />
-            <Route path="/about" component={About} />
+            <Route exact path="/" component={LandingPage} />
             <Route path="/game" component={Game} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
