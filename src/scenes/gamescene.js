@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
+import fbase from '../config/fire';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
 import logo from '../logo.png';
@@ -9,8 +10,6 @@ import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 
 const MAP_VIEW_MULT = 2;
-
-import fbase from '../config/fire';
 
 class GameScene extends Scene {
   constructor() {
