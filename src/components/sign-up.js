@@ -1,9 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import fbase from '../config/fire';
-import { signIn } from '../actions';
 
 class SignUp extends Component {
   constructor(props) {
@@ -38,7 +36,8 @@ class SignUp extends Component {
     }).catch((err) => {
       console.log(err);
     });
-    this.props.signIn(fbase.auth().currentUser.displayName);
+
+    this.props.history.push('/');
   }
 
   handleGuestLogin(event) {
@@ -49,18 +48,17 @@ class SignUp extends Component {
   render() {
     return (
       <div>
-        <h1>Sign Up</h1>
-        <form>
-          <input type="text" placeholder="email" onChange={this.handleEmailChange} />
-          <input type="text" placeholder="username" onChange={this.handleUsernameChange} />
-          <input type="text" placeholder="password" onChange={this.handlePasswordChange} />
-          <button type="button" onClick={this.handleSignUpPress}>Sign Up</button>
+        <form className="landing-page-alt">
+          <h1>Sign Up</h1>
+          <div><input type="text" placeholder="email" onChange={this.handleEmailChange} /></div>
+          <div><input type="text" placeholder="username" onChange={this.handleUsernameChange} /></div>
+          <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
+          <NavLink to="/"><button type="button" onClick={this.handleSignUpPress} className="button-var1">Sign Up</button></NavLink>
+          <p>Already have an account? Sign in <NavLink to="/signin" className="here-link">here!</NavLink></p>
         </form>
-        <p>Already have an account? Sign in <NavLink to="/signin">here!</NavLink></p>
-        <button type="button" onClick={this.handleGuestLogin}>Play as Guest</button>
       </div>
     );
   }
 }
 
-export default connect(null, { signIn })(SignUp);
+export default SignUp;

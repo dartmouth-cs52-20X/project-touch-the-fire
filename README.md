@@ -27,7 +27,7 @@ The first team to score 3 points wins the game.
 
 ## Setup
 
-This project requires both the code in this repo and the [client repo](https://github.com/dartmouth-cs52-20X/project-touch-the-fire)
+This project requires both the code in this repo and the [server repo](https://github.com/dartmouth-cs52-20X/project-api-touch-the-fire)
 
 ### Client Repo
 
@@ -71,4 +71,4 @@ The server is hosted through Heroku.
 ## Acknowledgments
 
 ### Testing
-heroku deploy test
+heroku deploy test travis-boundary test, test 4

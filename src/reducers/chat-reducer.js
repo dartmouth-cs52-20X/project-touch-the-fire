@@ -7,11 +7,13 @@ const initialState = {
 
 const ChatReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ActionTypes.FETCH_CHAT_MESSAGES:
+    case ActionTypes.SET_CHAT_MESSAGES:
       return (Object.assign({}, state, { all: action.payload }));
     // https://stackoverflow.com/questions/40911194/how-do-i-add-an-element-to-array-in-reducer-of-react-native-redux
     case ActionTypes.CREATE_CHAT_MESSAGE:
       return (Object.assign({}, state, { all: [...state.all, action.payload] }));
+    case ActionTypes.CLEAR_CHAT:
+      return (Object.assign({}, state, { all: [] }));
     default:
       return state;
   }

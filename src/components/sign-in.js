@@ -1,9 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import fbase from '../config/fire';
-import { signIn } from '../actions';
 
 class SignIn extends Component {
   constructor(props) {
@@ -31,28 +29,23 @@ class SignIn extends Component {
     }).catch((err) => {
       console.log(err);
     });
-    this.props.signIn(fbase.auth().currentUser.displayName);
-  }
 
-  handleGuestLogin(event) {
-    event.preventDefault();
-    fbase.auth().signInAnonymously().then((u) => { console.log(u); }).catch((err) => { console.log(err); });
+    this.props.history.push('/');
   }
 
   render() {
     return (
       <div>
-        <h1>Sign In</h1>
-        <form>
-          <input type="text" placeholder="email" onChange={this.handleEmailChange} />
-          <input type="text" placeholder="password" onChange={this.handlePasswordChange} />
-          <button type="button" onClick={this.handleSignInPress}>Sign In</button>
+        <form className="landing-page-alt">
+          <h1>Sign In</h1>
+          <div><input type="text" placeholder="email" onChange={this.handleEmailChange} /></div>
+          <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
+          <NavLink to="/"><button type="button" onClick={this.handleSignInPress} className="button-var1">Sign In</button></NavLink>
+          <p>New to Touch the Fire? Create an account <NavLink to="/signup" className="here-link">here!</NavLink></p>
         </form>
-        <p>New to Touch the Fire? Create an account <NavLink to="/signup">here!</NavLink></p>
-        <button type="button" onClick={this.handleGuestLogin}>Play as Guest</button>
       </div>
     );
   }
 }
 
-export default connect(null, { signIn })(SignIn);
+export default SignIn;
