@@ -42,6 +42,7 @@ class GameScene extends Scene {
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
+
     this.otherPlayers = this.physics.add.group();
     const username = this.handleAuthChange();
     this.socket.emit('username', username);
@@ -193,6 +194,7 @@ class GameScene extends Scene {
         x: this.ship.x,
         y: this.ship.y,
         rotation: this.ship.rotation,
+        // dba: this.ship.dba,
       };
     }
   }
