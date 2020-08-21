@@ -43,6 +43,7 @@ class Nav extends Component {
         <ul>
           <li><NavLink to="/" exact>Home</NavLink></li>
           <li><NavLink to="/about">About</NavLink></li>
+          <li><NavLink to="/chat">Chat</NavLink></li>
           <li><NavLink to="/game">Game</NavLink></li>
         </ul>
         {this.renderAuthButtons()}
