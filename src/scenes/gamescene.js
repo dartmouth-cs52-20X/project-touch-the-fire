@@ -4,8 +4,6 @@ import io from 'socket.io-client';
 import fbase from '../config/fire';
 import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
-import logo from '../logo.png';
-
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 
@@ -21,7 +19,6 @@ class GameScene extends Scene {
   preload() {
     this.load.image('ship', spaceshipred);
     this.load.image('money', money);
-    this.load.image('logo', logo);
     this.load.image('green', green);
     this.load.image('fire', fire);
   }
@@ -39,10 +36,12 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('http://localhost:9090/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.add.image(this.game.canvas.width, this.game.canvas.height, 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
-    this.add.image(this.game.canvas.width, this.game.canvas.height + 60, 'fire').setDisplaySize(50, 65);
+    this.cameras.main.setBackgroundColor('#086100');
+    // eslint-disable-next-line max-len
+    this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
+    this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
     this.otherPlayers = this.physics.add.group();
     const username = this.handleAuthChange();
     this.socket.emit('username', username);
@@ -86,6 +85,7 @@ class GameScene extends Scene {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
       this.redScoreText.setText(`Green: ${scores.red}`);
     });
+
     this.socket.on('starLocation', (starLocation) => {
       if (this.star) this.star.destroy();
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
@@ -93,6 +93,12 @@ class GameScene extends Scene {
         this.socket.emit('starCollected');
       });
     });
+
+    // this.socket.on('fireLocation', () => {
+    // if (!this.fire) {
+    // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
+    // }
+    // });
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -123,6 +129,8 @@ class GameScene extends Scene {
 
   update() {
     if (this.ship) {
+      this.physics.add.overlap(this.ship, this.fire, () => { console.log('touched the fire!'); });
+
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
