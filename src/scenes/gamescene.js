@@ -126,6 +126,7 @@ class GameScene extends Scene {
 
     // movement translational
     this.cameras.main.startFollow(this.ship);
+    this.ship.setData('speed', 9);
   }
 
   update() {
