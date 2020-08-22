@@ -51,6 +51,7 @@
     "axios": "^0.19.2",
     "firebase": "^7.18.0",
     "firebase-admin": "^9.1.0",
+    "immutable": "^4.0.0-rc.12",
     "jquery": "^3.5.1",
     "lodash.debounce": "^4.0.8",
     "phaser": "^3.24.1",
