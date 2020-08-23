@@ -1,6 +1,7 @@
 // keys for actiontypes
 export const ActionTypes = {
   SIGNIN: 'SIGNIN',
+  SIGNOUT: 'SIGNOUT',
   SET_CHAT_MESSAGES: 'SET_CHAT_MESSAGES',
   CREATE_CHAT_MESSAGE: 'CREATE_CHAT_MESSAGE',
   CLEAR_CHAT: 'CLEAR_CHAT',
@@ -10,6 +11,12 @@ export function signIn(username) {
   return {
     type: ActionTypes.SIGNIN,
     payload: username,
+  };
+}
+
+export function signOut() {
+  return {
+    type: ActionTypes.SIGNOUT,
   };
 }
 

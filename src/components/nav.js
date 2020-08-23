@@ -1,6 +1,8 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { signOut } from '../actions';
 import fbase from '../config/fire';
 
 class Nav extends Component {
@@ -16,6 +18,16 @@ class Nav extends Component {
     this.handleAuthChange();
   }
 
+  handleSignOut = () => {
+    fbase.auth().signOut().then(() => {
+      console.log('sign out success');
+      // Re-set the current-user in the Redux store
+      this.props.signOut();
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
   handleAuthChange() {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -23,14 +35,6 @@ class Nav extends Component {
       } else {
         this.setState({ user: null });
       }
-    });
-  }
-
-  handleSignOut() {
-    fbase.auth().signOut().then(() => {
-      console.log('sign out success');
-    }).catch((error) => {
-      console.log(error);
     });
   }
 
@@ -65,4 +69,4 @@ class Nav extends Component {
   }
 }
 
-export default Nav;
+export default withRouter(connect(null, { signOut })(Nav));
