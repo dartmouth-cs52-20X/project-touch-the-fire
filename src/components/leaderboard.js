@@ -4,7 +4,7 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { Map } from 'immutable';
-import fbase from '../config/fire';
+import firebase from 'firebase';
 import Entry from './leaderboard_entry';
 
 class Leaderboard extends Component {
@@ -21,7 +21,8 @@ class Leaderboard extends Component {
   }
 
   initialize() {
-    fbase.on('value', (snapshot) => {
+    const database = firebase.database().ref('user');
+    database.on('value', (snapshot) => {
       const newUserState = snapshot.val();
       this.setState({ users: Map(newUserState) });
     }, (error) => {
@@ -29,10 +30,12 @@ class Leaderboard extends Component {
     });
   }
 
-  findLargest() {
-    let largest = this.users.toIndexedSeq().get(0);
+  findLargest(array) {
+    let largest = this.state.users.toIndexedSeq().get(0);
     let score = 0;
-    this.users.entrySeq().forEach((element) => {
+    // eslint-disable-next-line consistent-return
+    this.state.users.entrySeq().forEach((element) => {
+      if (array.includes([element, element.score])) { return null; }
       if (element.score > largest.score) {
         largest = element;
         score = element.score;
@@ -43,23 +46,27 @@ class Leaderboard extends Component {
   }
 
   topN(n) {
+    if (this.state.users.size < n) { n = this.state.users.size; }
     let i = 0;
     const leaderboard = [];
-    this.initialize();
     while (i < n) {
-      leaderboard.push(this.findLargest);
+      leaderboard.push(this.findLargest(leaderboard));
       i += 1;
     }
     return leaderboard;
   }
 
   generateLeaderboard(n) {
-    let i = 0;
-    const entries = this.topN(n).forEach((element) => {
-      i += 1;
-      return <Entry rank={i} username={element[0]} score={element[1]} />;
-    });
-    return entries;
+    if (this.state.users.size > 0) {
+      let i = 0;
+      const entries = this.topN(n).map((element) => {
+        i += 1;
+        return <Entry rank={i} username={element[0]} score={element[1]} />;
+      });
+      console.log(entries);
+      return entries;
+    }
+    return null;
   }
 
   render() {

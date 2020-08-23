@@ -1,8 +1,6 @@
 import firebase from 'firebase';
-import 'firebase/auth';
-import 'firebase/database';
 
-const firebaseConfig = {
+const config = {
   apiKey: 'AIzaSyD3_y86cNgPL8t7MAYh81rqZBQDcjUSSyI',
   authDomain: 'touch-the-fire-auth.firebaseapp.com',
   databaseURL: 'https://touch-the-fire-auth.firebaseio.com',
@@ -12,6 +10,8 @@ const firebaseConfig = {
   appId: '1:595560193456:web:3718b09d84b45319280a75',
 };
 
-const fbase = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(config);
 
-export default fbase;
+const database = firebase.database().ref('user');
+
+export default database;
