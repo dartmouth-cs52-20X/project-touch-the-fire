@@ -3,14 +3,14 @@ import React, { Component } from 'react';
 import Phaser from 'phaser';
 import { IonPhaser } from '@ion-phaser/react';
 import GameScene from './scenes/gamescene';
+import Chat from './components/chat';
 
 class Game extends Component {
   state = {
     initialize: true,
     game: {
       type: Phaser.AUTO,
-      parent: 'phaser-parent',
-      width: '100%',
+      width: '80%',
       height: '100%',
       physics: {
         default: 'arcade',
@@ -27,7 +27,10 @@ class Game extends Component {
     const { initialize, game } = this.state;
     return (
       <div className="game-wrapper">
-        <IonPhaser game={game} initialize={initialize} />
+        <div>
+          <IonPhaser game={game} initialize={initialize} />
+          <Chat id="chat" />
+        </div>
       </div>
 
     );

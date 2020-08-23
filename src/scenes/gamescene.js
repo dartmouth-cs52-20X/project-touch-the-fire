@@ -38,7 +38,7 @@ class GameScene extends Scene {
   create() {
     this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.cameras.main.setBackgroundColor('#086100');
+    // this.cameras.main.setBackgroundColor('#086100');
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
@@ -81,10 +81,10 @@ class GameScene extends Scene {
       });
     });
     this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
-    this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#008000' }).setScrollFactor(0);
+    this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
     this.socket.on('scoreUpdate', (scores) => {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
-      this.redScoreText.setText(`Green: ${scores.red}`);
+      this.redScoreText.setText(`Red: ${scores.red}`);
     });
 
     this.socket.on('starLocation', (starLocation) => {
@@ -93,6 +93,16 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.star, () => {
         this.socket.emit('starCollected');
       });
+    });
+
+    this.input.on('gameout', () => {
+      console.log('out');
+      this.game.input.keyboard.enabled = false;
+    });
+
+    this.input.on('gameover', () => {
+      console.log('in');
+      this.game.input.keyboard.enabled = true;
     });
 
     // this.socket.on('fireLocation', () => {
@@ -107,7 +117,7 @@ class GameScene extends Scene {
     if (playerInfo.team === 'blue') {
       otherPlayer.setTint(0x0000ff);
     } else {
-      otherPlayer.setTint(0x008000);
+      otherPlayer.setTint(0xFF0000);
     }
     otherPlayer.playerId = playerInfo.playerId;
     this.otherPlayers.add(otherPlayer);
@@ -118,7 +128,7 @@ class GameScene extends Scene {
     if (playerInfo.team === 'blue') {
       this.ship.setTint(0x0000ff);
     } else {
-      this.ship.setTint(0x008000);
+      this.ship.setTint(0xFF0000);
     }
     this.ship.setDrag(100);
     this.ship.setAngularDrag(100);
@@ -126,13 +136,10 @@ class GameScene extends Scene {
 
     // movement translational
     this.cameras.main.startFollow(this.ship);
-    this.ship.setData('speed', 9);
   }
 
   update() {
     if (this.ship) {
-      this.physics.add.overlap(this.ship, this.fire, () => { console.log('touched the fire!'); });
-
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
