@@ -8,7 +8,7 @@ import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 
 const MAP_VIEW_MULT = 2;
-
+let touchingFire = false;
 class GameScene extends Scene {
   constructor() {
     super({
@@ -25,11 +25,12 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('http://localhost:9090/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
-    // this.cameras.main.setBackgroundColor('#086100');
     // eslint-disable-next-line max-len
-    this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
+    // this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
+    // this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
 
     this.otherPlayers = this.physics.add.group();
@@ -96,12 +97,6 @@ class GameScene extends Scene {
       console.log('in');
       this.game.input.keyboard.enabled = true;
     });
-
-    // this.socket.on('fireLocation', () => {
-    // if (!this.fire) {
-    // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-    // }
-    // });
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -115,8 +110,15 @@ class GameScene extends Scene {
     this.otherPlayers.add(otherPlayer);
   }
 
+  touchedFire = () => {
+    touchingFire = !touchingFire;
+    // console.log('touched the fire');
+  }
+
   addPlayer = (playerInfo) => {
     this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+    this.physics.add.overlap(this.ship, this.fire, () => { this.touchedFire(); });
+
     if (playerInfo.team === 'blue') {
       this.ship.setTint(0x0000ff);
     } else {
@@ -130,8 +132,9 @@ class GameScene extends Scene {
     this.cameras.main.startFollow(this.ship);
   }
 
-  update() {
+  update(time) {
     if (this.ship) {
+      if (touchingFire) console.log('touching fire');
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
@@ -145,7 +148,6 @@ class GameScene extends Scene {
         this.ship.setAngularVelocity(0);
         this.ship.setVelocityX(0);
       }
-
       if (this.cursors.up.isDown || this.cursors.W.isDown) {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
         this.ship.setVelocityY(-200);
