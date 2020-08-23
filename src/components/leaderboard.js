@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable new-cap */
@@ -30,36 +31,39 @@ class Leaderboard extends Component {
     });
   }
 
-  findLargest(array) {
-    let largest = this.state.users.toIndexedSeq().get(0);
-    let score = 0;
+  sort(array) {
     // eslint-disable-next-line consistent-return
+    console.log(this.state.users);
     this.state.users.entrySeq().forEach((element) => {
-      if (array.includes([element, element.score])) { return null; }
-      if (element.score > largest.score) {
-        largest = element;
-        score = element.score;
-        element.score = -1;
+      let i = 0;
+      if (array.length == 0) {
+        array.push([element[1].username, element[1].score]);
+      }
+      while (i < array.length) {
+        console.log([element[1].score, array[i][1]]);
+        if (element[1].score >= array[i][1]) {
+          array.splice(i, 0, [element[1].username, element[1].score]);
+          break;
+        } else {
+          i += 1;
+          if (i == array.size) {
+            array.push([element[1].username, element[1].score]);
+          }
+        }
       }
     });
-    return [largest.username, score];
   }
 
-  topN(n) {
-    if (this.state.users.size < n) { n = this.state.users.size; }
-    let i = 0;
+  topN() {
     const leaderboard = [];
-    while (i < n) {
-      leaderboard.push(this.findLargest(leaderboard));
-      i += 1;
-    }
+    this.sort(leaderboard);
     return leaderboard;
   }
 
-  generateLeaderboard(n) {
+  generateLeaderboard() {
     if (this.state.users.size > 0) {
       let i = 0;
-      const entries = this.topN(n).map((element) => {
+      const entries = this.topN().map((element) => {
         i += 1;
         return <Entry rank={i} username={element[0]} score={element[1]} />;
       });
@@ -72,7 +76,7 @@ class Leaderboard extends Component {
   render() {
     return (
       <div>
-        {this.generateLeaderboard(5)}
+        {this.generateLeaderboard()}
       </div>
     );
   }
