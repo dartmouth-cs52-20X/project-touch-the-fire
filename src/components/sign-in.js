@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import fbase from '../config/fire';
+import { signIn } from '../actions';
 
 class SignIn extends Component {
   constructor(props) {
@@ -11,25 +13,22 @@ class SignIn extends Component {
       email: '',
       password: '',
     };
-
-    this.handleEmailChange = this.handleEmailChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.handleSignInPress = this.handleSignInPress.bind(this);
   }
 
-  handleEmailChange(event) { this.setState({ email: event.target.value }); }
+  handleEmailChange = (event) => { this.setState({ email: event.target.value }); }
 
-  handlePasswordChange(event) { this.setState({ password: event.target.value }); }
+  handlePasswordChange = (event) => { this.setState({ password: event.target.value }); }
 
-  handleSignInPress(event) {
+  handleSignInPress = (event) => {
     event.preventDefault();
 
     fbase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
       console.log(u);
+      // Store the newly signed-in user's username in the Redux store
+      this.props.signIn(u.user.displayName);
     }).catch((err) => {
       console.log(err);
     });
-
     this.props.history.push('/');
   }
 
@@ -48,4 +47,4 @@ class SignIn extends Component {
   }
 }
 
-export default SignIn;
+export default withRouter(connect(null, { signIn })(SignIn));

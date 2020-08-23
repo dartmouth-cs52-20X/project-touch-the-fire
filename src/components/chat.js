@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
 import { setChatMessages, createChatMessage, clearChat } from '../actions';
-import fbase from '../config/fire';
 
 // For testing
 // const socketserver = 'http://localhost:9090';
@@ -39,16 +38,10 @@ class Chat extends Component {
   // Only want to send message if the it is not ''
   onSubmitClick = (event) => {
     if (this.state.message !== '') {
-      let user;
-      if (fbase.auth().currentUser.displayName !== null) {
-        user = fbase.auth().currentUser.displayName;
-      } else {
-        user = 'Guest';
-      }
       this.props.createChatMessage(
         this.socket,
         {
-          username: user,
+          username: this.props.current_user,
           message: this.state.message,
         },
       );
@@ -60,16 +53,10 @@ class Chat extends Component {
   // Only send the message if enter is clicked
   onEnterPress = (event) => {
     if (event.key === 'Enter' && this.state.message !== '') {
-      let user;
-      if (fbase.auth().currentUser.displayName !== null) {
-        user = fbase.auth().currentUser.displayName;
-      } else {
-        user = 'Guest';
-      }
       this.props.createChatMessage(
         this.socket,
         {
-          username: user,
+          username: this.props.current_user,
           message: this.state.message,
         },
       );
@@ -138,6 +125,7 @@ class Chat extends Component {
 const mapStateToProps = (ReduxState) => (
   {
     chatMessages: ReduxState.chatMessages.all,
+    current_user: ReduxState.username.current_user,
   }
 );
 
