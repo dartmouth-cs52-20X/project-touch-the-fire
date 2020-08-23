@@ -56,10 +56,14 @@ class LandingPage extends Component {
             {this.renderWelcomeMessage()}
           </div>
           <div>
-            <NavLink to="/game"><button type="button">Play</button></NavLink>
+            <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button">Leaderboard</button></NavLink>
+            <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
+          </div>
+          <div>
+            <button type="button" className="button-var2">Leaderboard</button>
           </div>
         </div>
       );

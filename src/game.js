@@ -26,7 +26,10 @@ class Game extends Component {
   render() {
     const { initialize, game } = this.state;
     return (
-      <IonPhaser game={game} initialize={initialize} />
+      <div className="game-wrapper">
+        <IonPhaser game={game} initialize={initialize} />
+      </div>
+
     );
   }
 }
