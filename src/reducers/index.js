@@ -3,9 +3,11 @@
 import { combineReducers } from 'redux';
 
 import UserReducer from './user-reducer';
+import ChatReducer from './chat-reducer';
 
 const rootReducer = combineReducers({
   username: UserReducer,
+  chatMessages: ChatReducer,
 });
 
 export default rootReducer;
