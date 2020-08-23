@@ -59,7 +59,7 @@ class LandingPage extends Component {
             <NavLink to="/game"><button type="button">Play</button></NavLink>
           </div>
           <div>
-            <button type="button">Leaderboard</button>
+            <NavLink to="/leaderboard"><button type="button">Leaderboard</button></NavLink>
           </div>
         </div>
       );
