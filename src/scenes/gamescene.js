@@ -8,7 +8,6 @@ import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 
 const MAP_VIEW_MULT = 2;
-let touchingFire = false;
 class GameScene extends Scene {
   constructor() {
     super({
@@ -25,12 +24,12 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    this.socket = io('http://localhost:9090/');
+    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    // this.socket = io('http://localhost:9090/');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
-    // this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
-    // this.cameras.main.setBackgroundColor('#086100');
+    this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
+    this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
 
     this.otherPlayers = this.physics.add.group();
@@ -97,6 +96,9 @@ class GameScene extends Scene {
       console.log('in');
       this.game.input.keyboard.enabled = true;
     });
+    this.okoverlap = 0;
+    this.switchstate = 0;
+    this.fireDuration = [];
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -110,14 +112,8 @@ class GameScene extends Scene {
     this.otherPlayers.add(otherPlayer);
   }
 
-  touchedFire = () => {
-    touchingFire = !touchingFire;
-    // console.log('touched the fire');
-  }
-
   addPlayer = (playerInfo) => {
     this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-    this.physics.add.overlap(this.ship, this.fire, () => { this.touchedFire(); });
 
     if (playerInfo.team === 'blue') {
       this.ship.setTint(0x0000ff);
@@ -132,9 +128,37 @@ class GameScene extends Scene {
     this.cameras.main.startFollow(this.ship);
   }
 
-  update(time) {
+  // found help from below link for knowing when two items are overlapping (ie touching the fire):
+  // https://phaser.io/sandbox/edit/ikJBIznv
+  handleCollide = () => {
+    if (this.okoverlap !== 1) {
+      this.okoverlap = 1;
+      if (this.switchstate === 0) {
+        this.switchstate = 1;
+      } else {
+        this.switchstate = 0;
+      }
+    }
+    // logs the times / durations that you touched the fire, will update this to calculate the length of time
+    // can do calc at the end of the match too maybe?
+    const d = new Date();
+    console.log(`touching fire at ${d.toLocaleTimeString()}.${(`000${d.getMilliseconds()}`).substr(-3)}`);
+    this.fireDuration.push(d);
+  }
+
+  checkOverlap = (spriteA, spriteB) => {
+    // eslint-disable-next-line new-cap
+    return Phaser.Geom.Intersects.GetRectangleIntersection(spriteA.getBounds(), spriteB.getBounds());
+  }
+
+  update() {
     if (this.ship) {
-      if (touchingFire) console.log('touching fire');
+      if (this.okoverlap === 1 && !this.checkOverlap(this.ship, this.fire)) {
+        this.okoverlap = 0;
+      }
+
+      this.physics.overlap(this.ship, this.fire, this.handleCollide, null, this);
+
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
