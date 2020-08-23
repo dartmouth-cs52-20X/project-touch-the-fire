@@ -25,7 +25,7 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('http://localhost:9090');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // this.cameras.main.setBackgroundColor('#086100');
     // eslint-disable-next-line max-len
@@ -61,8 +61,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.createCursorKeys(), ...this.input.keyboard.addKeys('W,S,A,D') };
-    console.log(this.cursors);
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -86,17 +85,7 @@ class GameScene extends Scene {
         this.socket.emit('starCollected');
       });
     });
-
-    this.input.on('gameout', () => {
-      console.log('out');
-      this.game.input.keyboard.enabled = false;
-    });
-
-    this.input.on('gameover', () => {
-      console.log('in');
-      this.game.input.keyboard.enabled = true;
-    });
-
+    this.game.input.keyboard.clearCaptures();
     // this.socket.on('fireLocation', () => {
     // if (!this.fire) {
     // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
@@ -132,12 +121,13 @@ class GameScene extends Scene {
 
   update() {
     if (this.ship) {
-      if (this.cursors.left.isDown || this.cursors.A.isDown) {
+      if (this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
+        console.log('beingcalled');
         this.ship.setRotation(Math.PI / 2);
         // this.cameras.main.shake();
-      } else if (this.cursors.right.isDown || this.cursors.D.isDown) {
+      } else if (this.cursors.D.isDown) {
         // this.ship.setAngularVelocity(150);
         this.ship.setVelocityX(200);
         this.ship.setRotation(-Math.PI / 2);
@@ -146,11 +136,11 @@ class GameScene extends Scene {
         this.ship.setVelocityX(0);
       }
 
-      if (this.cursors.up.isDown || this.cursors.W.isDown) {
+      if (this.cursors.W.isDown) {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
         this.ship.setVelocityY(-200);
         this.ship.setRotation(Math.PI);
-      } else if (this.cursors.down.isDown || this.cursors.S.isDown) {
+      } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
         this.ship.setRotation();
       } else {
