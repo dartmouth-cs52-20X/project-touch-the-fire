@@ -24,8 +24,8 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    // this.socket = io('http://localhost:9090/');
+    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('localhost:9090');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -34,7 +34,8 @@ class GameScene extends Scene {
 
     this.otherPlayers = this.physics.add.group();
     fbase.auth().onAuthStateChanged((user) => {
-      const username = user.displayName;
+      let username = user.displayName;
+      if (username === null) { username = 'decheftw'; }
       console.log(username);
       this.socket.emit('username', username);
     });
@@ -61,8 +62,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.createCursorKeys(), ...this.input.keyboard.addKeys('W,S,A,D') };
-    console.log(this.cursors);
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -99,6 +99,7 @@ class GameScene extends Scene {
     this.okoverlap = 0;
     this.switchstate = 0;
     this.fireDuration = [];
+    this.game.input.keyboard.clearCaptures();
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -160,11 +161,13 @@ class GameScene extends Scene {
       this.physics.overlap(this.ship, this.fire, this.handleCollide, null, this);
 
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
+
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
+        console.log('beingcalled');
         this.ship.setRotation(Math.PI / 2);
         // this.cameras.main.shake();
-      } else if (this.cursors.right.isDown || this.cursors.D.isDown) {
+      } else if (this.cursors.D.isDown) {
         // this.ship.setAngularVelocity(150);
         this.ship.setVelocityX(200);
         this.ship.setRotation(-Math.PI / 2);
@@ -176,7 +179,7 @@ class GameScene extends Scene {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
         this.ship.setVelocityY(-200);
         this.ship.setRotation(Math.PI);
-      } else if (this.cursors.down.isDown || this.cursors.S.isDown) {
+      } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
         this.ship.setRotation();
       } else {
