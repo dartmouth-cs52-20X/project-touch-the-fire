@@ -161,7 +161,6 @@ class GameScene extends Scene {
       this.physics.overlap(this.ship, this.fire, this.handleCollide, null, this);
 
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
-
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
         console.log('beingcalled');
