@@ -170,3 +170,24 @@ nav ul {
   height:100%;
   width: 20%;
 }
+
+#leaderboard_entry {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin-left: 5em;
+  margin-right: 5em;
+}
+
+#rank {
+  background-color: seagreen;
+  padding: 5em, 0em;
+}
+
+#username {
+  background-color: snow;
+}
+
+#score {
+  background-color: seagreen;
+}

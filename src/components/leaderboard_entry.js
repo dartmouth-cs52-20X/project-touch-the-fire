@@ -12,9 +12,11 @@ class Entry extends Component {
   render() {
     return (
       <div>
-        <div id="rank">{this.props.rank}</div>
-        <div id="username">{this.props.username}</div>
-        <div id="score">{this.props.score}</div>
+        <div id="leaderboard_entry">
+          <div id="rank">{this.props.rank}</div>
+          <div id="username">{this.props.username}</div>
+          <div id="score">{this.props.score}</div>
+        </div>
       </div>
     );
   }

@@ -75,7 +75,7 @@ class Leaderboard extends Component {
 
   render() {
     return (
-      <div>
+      <div id="leaderboard">
         {this.generateLeaderboard()}
       </div>
     );
