@@ -35,10 +35,11 @@ class GameScene extends Scene {
 
     this.otherPlayers = this.physics.add.group();
     fbase.auth().onAuthStateChanged((user) => {
-      let username = user.displayName;
-      if (username === null) { username = 'decheftw'; }
+      let { email } = user;
+      const username = user.displayName;
+      if (username === null) { email = 'devonc2000@gmail.com'; }
       console.log(username);
-      this.socket.emit('username', username);
+      this.socket.emit('username', [username, email]);
     });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
