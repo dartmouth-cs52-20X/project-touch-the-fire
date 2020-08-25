@@ -84,20 +84,8 @@ class GameScene extends Scene {
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
         console.log('pew');
-
-        this.ship.data.base_speed += 0.2;
         this.socket.emit('starCollected');
       });
-    });
-
-    this.input.on('gameout', () => {
-      console.log('out');
-      this.game.input.keyboard.enabled = false;
-    });
-
-    this.input.on('gameover', () => {
-      console.log('in');
-      this.game.input.keyboard.enabled = true;
     });
     this.okoverlap = 0;
     this.switchstate = 0;
@@ -235,12 +223,12 @@ class GameScene extends Scene {
         // this.cameras.main.shake();
       } else if (this.cursors.D.isDown) {
         // this.ship.setAngularVelocity(150);
-        this.ship.setVelocityX(200 * this.ship.data.base_speed);
+        this.ship.setVelocityX(200);
         this.ship.setRotation(-Math.PI / 2);
       }
-      if (this.cursors.up.isDown || this.cursors.W.isDown) {
+      if (this.cursors.W.isDown) {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
-        this.ship.setVelocityY(-200 * this.ship.data.base_speed);
+        this.ship.setVelocityY(-200);
         this.ship.setRotation(Math.PI);
       } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
