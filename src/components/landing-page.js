@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import fbase from '../config/fire';
+import { signIn } from '../actions';
 
 class LandingPage extends Component {
   constructor(props) {
@@ -16,6 +18,17 @@ class LandingPage extends Component {
     this.handleAuthChange();
   }
 
+  handleGuestLogin = (event) => {
+    event.preventDefault();
+    fbase.auth().signInAnonymously().then((u) => {
+      console.log(u);
+      // Store the guest username in the Redux store (taken from the one generated in the landing page)
+      this.props.signIn(`Guest${u.user.uid.substring(0, 4)}`);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
   handleAuthChange() {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -26,26 +39,24 @@ class LandingPage extends Component {
     });
   }
 
-  handleGuestLogin(event) {
-    event.preventDefault();
-    fbase.auth().signInAnonymously().then((u) => { console.log(u); }).catch((err) => { console.log(err); });
-  }
-
   renderWelcomeMessage() {
-    if (fbase.auth().currentUser) {
-      if (fbase.auth().currentUser.displayName) {
-        return (
-          <h1>Welcome, {fbase.auth().currentUser.displayName}!</h1>
-        );
-      } else {
-        const guestID = fbase.auth().currentUser.uid.substring(0, 4);
-        return (
-          <h1>Welcome, Guest {guestID}!</h1>
-        );
-      }
-    } else {
-      return null;
-    }
+    // if (fbase.auth().currentUser) {
+    //   if (fbase.auth().currentUser.displayName) {
+    //     return (
+    //       <h1>Welcome, {fbase.auth().currentUser.displayName}!</h1>
+    //     );
+    //   } else {
+    //     const guestID = fbase.auth().currentUser.uid.substring(0, 4);
+    //     return (
+    //       <h1>Welcome, Guest {guestID}!</h1>
+    //     );
+    //   }
+    // } else {
+    //   return null;
+    // }
+    return (
+      <h1>Welcome, {this.props.current_user}!</h1>
+    );
   }
 
   render() {
@@ -56,10 +67,13 @@ class LandingPage extends Component {
             {this.renderWelcomeMessage()}
           </div>
           <div>
-            <NavLink to="/game"><button type="button">Play</button></NavLink>
+            <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
-            <button type="button">Leaderboard</button>
+            <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
+          </div>
+          <div>
+            <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>
           </div>
         </div>
       );
@@ -82,4 +96,11 @@ class LandingPage extends Component {
   }
 }
 
-export default LandingPage;
+// Now have access to the signed-in user's username (or the guest username) with this.props.current_user
+const mapStateToProps = (ReduxState) => (
+  {
+    current_user: ReduxState.username.current_user,
+  }
+);
+
+export default withRouter(connect(mapStateToProps, { signIn })(LandingPage));

@@ -9,7 +9,9 @@ import Game from '../game';
 import Nav from './nav';
 import SignIn from './sign-in';
 import SignUp from './sign-up';
+import Chat from './chat';
 import LandingPage from './landing-page';
+import Leaderboard from './leaderboard';
 
 const FallBack = (props) => {
   return <div>URL Not Found</div>;
@@ -56,6 +58,8 @@ class App extends Component {
             <Route path="/game" component={Game} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
+            <Route path="/leaderboard" component={Leaderboard} />
+            <Route path="/chat" component={Chat} />
             <Route component={FallBack} />
           </Switch>
         </div>

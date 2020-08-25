@@ -1,11 +1,16 @@
+/* eslint-disable prefer-object-spread */
 import { ActionTypes } from '../actions';
 
-const UserReducer = (state = 0, action) => {
+const initialState = {
+  current_user: '',
+};
+
+const UserReducer = (state = initialState, action) => {
   switch (action.type) {
     case ActionTypes.SIGNIN:
-      return { username: action.payload };
-    case ActionTypes.DECREMENT:
-      return state - 1;
+      return (Object.assign({}, state, { current_user: action.payload }));
+    case ActionTypes.SIGNOUT:
+      return (Object.assign({}, state, { current_user: '' }));
     default:
       return state;
   }
