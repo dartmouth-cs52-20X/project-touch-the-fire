@@ -24,12 +24,8 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-<<<<<<< HEAD
-    this.socket = io('http://localhost:9090');
-=======
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
->>>>>>> 9985e532d86a62f4f9db486e730f2d143772c1be
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -128,12 +124,7 @@ class GameScene extends Scene {
       this.ship.setTint(0x0000ff);
       // this.ship.setMaxVelocity(100);
     } else {
-<<<<<<< HEAD
-      this.ship.setTint(0x008000);
-      // this.ship.setMaxVelocity(200);
-=======
       this.ship.setTint(0xFF0000);
->>>>>>> 9985e532d86a62f4f9db486e730f2d143772c1be
     }
     this.ship.setDrag(100);
     this.ship.setAngularDrag(100);
@@ -174,13 +165,8 @@ class GameScene extends Scene {
 
       if (this.cursors.left.isDown || this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
-<<<<<<< HEAD
-        console.log('left');
-        this.ship.setVelocityX(-200 * this.ship.data.base_speed);
-=======
         this.ship.setVelocityX(-200);
         console.log('beingcalled');
->>>>>>> 9985e532d86a62f4f9db486e730f2d143772c1be
         this.ship.setRotation(Math.PI / 2);
         // this.cameras.main.shake();
       } else if (this.cursors.D.isDown) {
@@ -195,13 +181,8 @@ class GameScene extends Scene {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
         this.ship.setVelocityY(-200 * this.ship.data.base_speed);
         this.ship.setRotation(Math.PI);
-<<<<<<< HEAD
-      } else if (this.cursors.down.isDown || this.cursors.S.isDown) {
-        this.ship.setVelocityY(200 * this.ship.data.base_speed);
-=======
       } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
->>>>>>> 9985e532d86a62f4f9db486e730f2d143772c1be
         this.ship.setRotation();
       } else {
         // this.ship.setAcceleration(0);
@@ -212,8 +193,8 @@ class GameScene extends Scene {
       const { x } = this.ship;
       const { y } = this.ship;
       const r = this.ship.rotation;
-      const base = this.ship.base_speed;
-      
+      // const base = this.ship.base_speed;
+
       if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)) {
         if ((x > this.game.canvas.width * MAP_VIEW_MULT || x < 0) && (y > this.game.canvas.height * MAP_VIEW_MULT || y < 0)) {
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
@@ -246,11 +227,7 @@ class GameScene extends Scene {
         x: this.ship.x,
         y: this.ship.y,
         rotation: this.ship.rotation,
-<<<<<<< HEAD
-        base_speed: this.ship.base_speed,
-=======
         // dba: this.ship.dba,
->>>>>>> 9985e532d86a62f4f9db486e730f2d143772c1be
       };
     }
   }
