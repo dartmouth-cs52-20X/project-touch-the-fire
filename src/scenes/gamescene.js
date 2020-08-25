@@ -83,6 +83,9 @@ class GameScene extends Scene {
       if (this.star) this.star.destroy();
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
+        console.log('pew');
+
+        this.ship.data.base_speed += 0.2;
         this.socket.emit('starCollected');
       });
     });
@@ -103,6 +106,7 @@ class GameScene extends Scene {
   }
 
   addOtherPlayers = (playerInfo) => {
+    console.log(playerInfo);
     const otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     if (playerInfo.team === 'blue') {
       otherPlayer.setTint(0x0000ff);
@@ -118,13 +122,12 @@ class GameScene extends Scene {
 
     if (playerInfo.team === 'blue') {
       this.ship.setTint(0x0000ff);
+      // this.ship.setMaxVelocity(100);
     } else {
       this.ship.setTint(0xFF0000);
     }
     this.ship.setDrag(100);
     this.ship.setAngularDrag(100);
-    this.ship.setMaxVelocity(200);
-
     // movement translational
     this.cameras.main.startFollow(this.ship);
   }
@@ -168,7 +171,7 @@ class GameScene extends Scene {
         // this.cameras.main.shake();
       } else if (this.cursors.D.isDown) {
         // this.ship.setAngularVelocity(150);
-        this.ship.setVelocityX(200);
+        this.ship.setVelocityX(200 * this.ship.data.base_speed);
         this.ship.setRotation(-Math.PI / 2);
       } else {
         this.ship.setAngularVelocity(0);
@@ -176,7 +179,7 @@ class GameScene extends Scene {
       }
       if (this.cursors.up.isDown || this.cursors.W.isDown) {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
-        this.ship.setVelocityY(-200);
+        this.ship.setVelocityY(-200 * this.ship.data.base_speed);
         this.ship.setRotation(Math.PI);
       } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
@@ -190,6 +193,8 @@ class GameScene extends Scene {
       const { x } = this.ship;
       const { y } = this.ship;
       const r = this.ship.rotation;
+      // const base = this.ship.base_speed;
+
       if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)) {
         if ((x > this.game.canvas.width * MAP_VIEW_MULT || x < 0) && (y > this.game.canvas.height * MAP_VIEW_MULT || y < 0)) {
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
