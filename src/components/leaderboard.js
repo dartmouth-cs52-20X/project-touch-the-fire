@@ -65,7 +65,7 @@ class Leaderboard extends Component {
       let i = 0;
       const entries = this.topN().map((element) => {
         i += 1;
-        return <Entry rank={i} username={element[0]} score={element[1]} />;
+        return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
       });
       console.log(entries);
       return entries;
@@ -75,8 +75,14 @@ class Leaderboard extends Component {
 
   render() {
     return (
-      <div>
-        {this.generateLeaderboard()}
+      <div id="lb-page">
+        <div id="lb-title">
+          <h1>Leaderboard</h1>
+        </div>
+        <div id="leaderboard-top">
+          {this.generateLeaderboard()}
+        </div>
+
       </div>
     );
   }
