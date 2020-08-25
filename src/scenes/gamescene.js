@@ -63,7 +63,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D') };
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -93,6 +93,48 @@ class GameScene extends Scene {
     // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
     // }
     // });
+    this.fired = false;
+    this.input.keyboard.on('keydown_SPACE', () => {
+      if (!this.fired) {
+        this.fired = !this.fired;
+        this.socket.emit('lasershot', {
+          laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id,
+        });
+      }
+    });
+    this.input.keyboard.on('keyup_SPACE', () => {
+      this.fired = !this.fired;
+    });
+    this.lasers = [];
+    this.socket.on('laser-locationchange', (updatedLasers) => {
+      updatedLasers.forEach((item, index) => {
+        if (this.lasers[index] === undefined) {
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'ship').setDisplaySize(20, 10);
+        } else {
+          this.lasers[index].x = item.x;
+          this.lasers[index].y = item.y;
+        }
+      });
+      this.lasers.forEach((item, index) => {
+        if (index >= updatedLasers.length) {
+          item.destroy();
+          this.lasers.splice(index, 1);
+        }
+      });
+    });
+
+    this.hitstaken = 0;
+    this.lastlasertohit = Date.now();
+    this.socket.on('hit', (info) => {
+      if (info.playerId === this.socket.id) {
+        if (this.lastlasertohit !== info.laserId) {
+          this.hitstaken += 1;
+          this.lastlasertohit = info.laserId;
+          this.ship.setAlpha(0.3);
+        }
+        console.log(this.hitstaken);
+      }
+    });
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -123,19 +165,33 @@ class GameScene extends Scene {
 
   update() {
     if (this.ship) {
+      if (this.ship.alpha < 1) {
+        this.ship.alpha += 0.01;
+      } else {
+        this.ship.setAlpha(1);
+      }
+      if (this.cursors.J.isDown) {
+        this.ship.setAngularVelocity(-150);
+      } else if (this.cursors.L.isDown) {
+        this.ship.setAngularVelocity(150);
+      } else {
+        this.ship.setAngularVelocity(0);
+      }
+      if (this.cursors.I.isDown) {
+        this.physics.velocityFromRotation(this.ship.rotation + 1.5, 200, this.ship.body.velocity);
+      } else {
+        this.ship.setAcceleration(0);
+        this.ship.setVelocity(0, 0);
+      }
       if (this.cursors.A.isDown) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
-        console.log('beingcalled');
         this.ship.setRotation(Math.PI / 2);
         // this.cameras.main.shake();
       } else if (this.cursors.D.isDown) {
         // this.ship.setAngularVelocity(150);
         this.ship.setVelocityX(200);
         this.ship.setRotation(-Math.PI / 2);
-      } else {
-        this.ship.setAngularVelocity(0);
-        this.ship.setVelocityX(0);
       }
 
       if (this.cursors.W.isDown) {
@@ -145,12 +201,8 @@ class GameScene extends Scene {
       } else if (this.cursors.S.isDown) {
         this.ship.setVelocityY(200);
         this.ship.setRotation();
-      } else {
-        // this.ship.setAcceleration(0);
-        this.ship.setVelocityY(0);
       }
 
-      // this.physics.world.wrap(this.ship, 5);
       const { x } = this.ship;
       const { y } = this.ship;
       const r = this.ship.rotation;
@@ -186,7 +238,6 @@ class GameScene extends Scene {
         x: this.ship.x,
         y: this.ship.y,
         rotation: this.ship.rotation,
-        // dba: this.ship.dba,
       };
     }
   }
