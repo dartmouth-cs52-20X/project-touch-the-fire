@@ -107,6 +107,11 @@ class GameScene extends Scene {
     this.input.keyboard.on('keyup_SPACE', () => {
       this.fired = !this.fired;
     });
+    this.socket.on('timeUpdate', (time) => {
+      const seconds = 60 - this.countDown.getElapsed() / 1000;
+      this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    });
+
     this.lasers = [];
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
@@ -140,6 +145,7 @@ class GameScene extends Scene {
   }
 
   onEvent = () => {
+    this.socket.emit('calcFireTime', this.fireDuration.length);
     this.countDownText.setText('Times up');
   }
 
@@ -195,8 +201,9 @@ class GameScene extends Scene {
 
   update() {
     // this.countDownText.setText(`${this.countDown.getProgress.toString.}`);
-    const seconds = 60 - this.countDown.getElapsed() / 1000;
-    this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    // const seconds = 60 - this.countDown.getElapsed() / 1000;
+    // this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    this.socket.emit('updateTime');
     if (this.ship) {
       if (this.ship.alpha < 1) {
         this.ship.alpha += 0.01;
