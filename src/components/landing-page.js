@@ -33,6 +33,7 @@ class LandingPage extends Component {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
+        this.props.signIn(user.displayName);
       } else {
         this.setState({ user: null });
       }
