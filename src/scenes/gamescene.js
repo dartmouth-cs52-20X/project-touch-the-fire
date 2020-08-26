@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-undef */
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
@@ -29,7 +30,7 @@ class GameScene extends Scene {
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
-    this.cameras.main.setBackgroundColor('#086100');
+    this.cameras.main.setBackgroundColor('#B5651D');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
 
     this.otherPlayers = this.physics.add.group();
@@ -91,17 +92,12 @@ class GameScene extends Scene {
     this.switchstate = 0;
     this.fireDuration = [];
     this.game.input.keyboard.clearCaptures();
-    // this.socket.on('fireLocation', () => {
-    // if (!this.fire) {
-    // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-    // }
-    // });
     this.fired = false;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired) {
         this.fired = !this.fired;
         this.socket.emit('lasershot', {
-          laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id,
+          laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id, shooter_team: this.ship.team,
         });
       }
     });
@@ -128,14 +124,21 @@ class GameScene extends Scene {
 
     this.hitstaken = 0;
     this.lastlasertohit = Date.now();
+    this.awayUpdate();
     this.socket.on('hit', (info) => {
       if (info.playerId === this.socket.id) {
-        if (this.lastlasertohit !== info.laserId) {
+        if (this.lastlasertohit !== info.laserId && info.shooter_team !== this.ship.team) {
           this.hitstaken += 1;
           this.lastlasertohit = info.laserId;
           this.ship.setAlpha(0.3);
         }
         console.log(this.hitstaken);
+      } else {
+        this.otherPlayers.getChildren().forEach((player) => {
+          if (player.playerId === info.playerId && player.team !== this.ship.team) {
+            player.setAlpha(0.3);
+          }
+        });
       }
     });
   }
@@ -149,6 +152,7 @@ class GameScene extends Scene {
       otherPlayer.setTint(0xFF0000);
     }
     otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.team = playerInfo.team;
     this.otherPlayers.add(otherPlayer);
   }
 
@@ -161,9 +165,7 @@ class GameScene extends Scene {
     } else {
       this.ship.setTint(0xFF0000);
     }
-    this.ship.setDrag(100);
-    this.ship.setAngularDrag(100);
-    // movement translational
+    this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
   }
 
@@ -190,13 +192,39 @@ class GameScene extends Scene {
     return Phaser.Geom.Intersects.GetRectangleIntersection(spriteA.getBounds(), spriteB.getBounds());
   }
 
+  updateHitsOnAway = () => {
+    if (this.hitstaken >= 3) {
+      this.ship.x = 50;
+      this.ship.y = 50;
+      this.hitstaken = 0;
+      this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
+    }
+  }
+
+  awayUpdate= () => {
+    setInterval(this.updateHitsOnAway, 1000);
+  }
+
   update() {
     if (this.ship) {
+      if (this.hitstaken >= 3) {
+        this.ship.x = 50;
+        this.ship.y = 50;
+        this.hitstaken = 0;
+        this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
+      }
       if (this.ship.alpha < 1) {
         this.ship.alpha += 0.01;
       } else {
         this.ship.setAlpha(1);
       }
+      this.otherPlayers.getChildren().forEach((player) => {
+        if (player.alpha < 1) {
+          player.setAlpha(player.alpha + 0.01);
+        } else {
+          player.setAlpha(1);
+        }
+      });
       if (this.cursors.J.isDown) {
         this.ship.setAngularVelocity(-150);
       } else if (this.cursors.L.isDown) {
