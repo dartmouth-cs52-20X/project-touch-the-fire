@@ -9,13 +9,7 @@ class Nav extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      user: {},
-    };
-  }
-
-  componentDidMount() {
-    this.handleAuthChange();
+    this.state = {};
   }
 
   handleSignOut = () => {
@@ -28,33 +22,6 @@ class Nav extends Component {
     });
   }
 
-  handleAuthChange() {
-    fbase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({ user });
-      } else {
-        this.setState({ user: null });
-      }
-    });
-  }
-
-  renderAuthButtons() {
-    if (this.state.user) {
-      return (
-        <ul>
-          <li><NavLink to="/"><button type="button" id="nav-signout" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>
-        </ul>
-      );
-    } else {
-      return (
-        <ul>
-          <li><NavLink to="/signin">Sign In</NavLink></li>
-          <li><NavLink to="/signup">Sign Up</NavLink></li>
-        </ul>
-      );
-    }
-  }
-
   render() {
     return (
       <nav>
@@ -62,7 +29,9 @@ class Nav extends Component {
           <NavLink to="/" id="nav-title"><h2><i className="fas fa-fire-alt" id="fire-icon" />TouchTheFire</h2></NavLink>
         </div>
         <div>
-          {this.renderAuthButtons()}
+          <ul>
+            <li><NavLink to="/"><button type="button" id="nav-signout" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>
+          </ul>
         </div>
       </nav>
     );
