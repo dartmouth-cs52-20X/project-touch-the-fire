@@ -8,6 +8,7 @@ import blueplayer from '../assets/blue_player.png';
 import redplayer from '../assets/red_player.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
+import keystone from '../assets/keystone.png';
 
 const MAP_VIEW_MULT = 2;
 class GameScene extends Scene {
@@ -23,6 +24,7 @@ class GameScene extends Scene {
     this.load.image('money', money);
     this.load.image('fire', fire);
     this.load.image('green', green);
+    this.load.image('keystone', keystone);
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
@@ -92,6 +94,15 @@ class GameScene extends Scene {
         this.socket.emit('starCollected');
       });
     });
+
+    this.socket.on('keystoneLocation', (keystoneLocation) => {
+      if (this.keystone) this.keystone.destroy();
+      this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.keystone, () => {
+        this.socket.emit('keystoneCollected');
+      });
+    });
+
     this.okoverlap = 0;
     this.switchstate = 0;
     this.fireDuration = [];
@@ -247,8 +258,11 @@ class GameScene extends Scene {
       } else {
         this.ship.setAngularVelocity(0);
       }
+
       if (this.cursors.I.isDown) {
         this.physics.velocityFromRotation(this.ship.rotation + 1.5, 200, this.ship.body.velocity);
+      } else if (this.cursors.K.isDown) {
+        this.physics.velocityFromRotation(this.ship.rotation - 1.5, 200, this.ship.body.velocity);
       } else {
         this.ship.setAcceleration(0);
         this.ship.setVelocity(0, 0);
