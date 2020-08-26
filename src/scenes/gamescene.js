@@ -171,22 +171,27 @@ class GameScene extends Scene {
 
   addOtherPlayers = (playerInfo) => {
     console.log(playerInfo);
+    let otherPlayer;
     if (playerInfo.team === 'blue') {
-      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
-      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
+
     otherPlayer.playerId = playerInfo.playerId;
     otherPlayer.team = playerInfo.team;
     this.otherPlayers.add(otherPlayer);
   }
 
   addPlayer = (playerInfo) => {
+    // eslint-disable-next-line no-unused-expressions
+    this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
+
     this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
   }
