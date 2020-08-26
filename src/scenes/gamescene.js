@@ -3,8 +3,9 @@
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import fbase from '../config/fire';
-import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
+import blueplayer from '../assets/blue_player.png';
+import redplayer from '../assets/red_player.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 
@@ -17,16 +18,17 @@ class GameScene extends Scene {
   }
 
   preload() {
-    this.load.image('ship', spaceshipred);
+    this.load.image('blueplayer', blueplayer);
+    this.load.image('redplayer', redplayer);
     this.load.image('money', money);
-    this.load.image('green', green);
     this.load.image('fire', fire);
+    this.load.image('green', green);
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    // this.socket = io('localhost:9090');
+    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('localhost:9090');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -116,7 +118,7 @@ class GameScene extends Scene {
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
         if (this.lasers[index] === undefined) {
-          this.lasers[index] = this.add.sprite(item.x, item.y, 'ship').setDisplaySize(20, 10);
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'bluerunning').setDisplaySize(20, 10);
         } else {
           this.lasers[index].x = item.x;
           this.lasers[index].y = item.y;
@@ -158,11 +160,10 @@ class GameScene extends Scene {
 
   addOtherPlayers = (playerInfo) => {
     console.log(playerInfo);
-    const otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     if (playerInfo.team === 'blue') {
-      otherPlayer.setTint(0x0000ff);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
-      otherPlayer.setTint(0xFF0000);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
     otherPlayer.playerId = playerInfo.playerId;
     otherPlayer.team = playerInfo.team;
@@ -170,13 +171,10 @@ class GameScene extends Scene {
   }
 
   addPlayer = (playerInfo) => {
-    this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-
     if (playerInfo.team === 'blue') {
-      this.ship.setTint(0x0000ff);
-      // this.ship.setMaxVelocity(100);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
-      this.ship.setTint(0xFF0000);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
     this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
