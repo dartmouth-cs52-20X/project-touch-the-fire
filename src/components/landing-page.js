@@ -45,20 +45,6 @@ class LandingPage extends Component {
   }
 
   renderWelcomeMessage() {
-    // if (fbase.auth().currentUser) {
-    //   if (fbase.auth().currentUser.displayName) {
-    //     return (
-    //       <h1>Welcome, {fbase.auth().currentUser.displayName}!</h1>
-    //     );
-    //   } else {
-    //     const guestID = fbase.auth().currentUser.uid.substring(0, 4);
-    //     return (
-    //       <h1>Welcome, Guest {guestID}!</h1>
-    //     );
-    //   }
-    // } else {
-    //   return null;
-    // }
     return (
       <h1>Welcome, {this.props.current_user}!</h1>
     );
@@ -73,6 +59,9 @@ class LandingPage extends Component {
           </div>
           <div>
             <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
+          </div>
+          <div>
+            <NavLink to="/instructions"><button type="button" className="button-var2">Instructions</button></NavLink>
           </div>
           <div>
             <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
