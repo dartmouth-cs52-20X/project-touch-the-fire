@@ -1,8 +1,10 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import io from 'socket.io-client';
 import { setChatMessages, createChatMessage, clearChat } from '../actions';
+import keystone from '../assets/keystone.png';
 
 // For testing
 // const socketserver = 'http://localhost:9090';
@@ -111,9 +113,49 @@ class Chat extends Component {
     }
   }
 
+  renderPowerMenu() {
+    return (
+      <div className="power-up-menu">
+        <div><h1>Power Up Menu</h1></div>
+        <div className="power-up-menu-desc" />
+        <div className="power-up-items">
+          <div className="powerup-row">
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+          </div>
+          <div className="powerup-row">
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+            <div id="powerup-item">
+              <img src={keystone} alt="keystone" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="chat-wrapper">
+        {this.renderPowerMenu()}
         {this.renderPreviousMessages()}
         {this.renderMessageInputBox()}
       </div>
