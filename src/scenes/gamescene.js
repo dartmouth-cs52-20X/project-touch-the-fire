@@ -118,7 +118,7 @@ class GameScene extends Scene {
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
         if (this.lasers[index] === undefined) {
-          this.lasers[index] = this.add.sprite(item.x, item.y, 'bluerunning').setDisplaySize(20, 10);
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'money').setDisplaySize(20, 10);
         } else {
           this.lasers[index].x = item.x;
           this.lasers[index].y = item.y;
