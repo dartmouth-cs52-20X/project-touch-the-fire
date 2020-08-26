@@ -3,8 +3,9 @@
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import fbase from '../config/fire';
-import spaceshipred from '../assets/spaceshipred.png';
 import money from '../assets/money.png';
+import blueplayer from '../assets/blue_player.png';
+import redplayer from '../assets/red_player.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
@@ -18,10 +19,11 @@ class GameScene extends Scene {
   }
 
   preload() {
-    this.load.image('ship', spaceshipred);
+    this.load.image('blueplayer', blueplayer);
+    this.load.image('redplayer', redplayer);
     this.load.image('money', money);
-    this.load.image('green', green);
     this.load.image('fire', fire);
+    this.load.image('green', green);
     this.load.image('keystone', keystone);
   }
 
@@ -127,7 +129,7 @@ class GameScene extends Scene {
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
         if (this.lasers[index] === undefined) {
-          this.lasers[index] = this.add.sprite(item.x, item.y, 'ship').setDisplaySize(20, 10);
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'money').setDisplaySize(20, 10);
         } else {
           this.lasers[index].x = item.x;
           this.lasers[index].y = item.y;
@@ -169,26 +171,27 @@ class GameScene extends Scene {
 
   addOtherPlayers = (playerInfo) => {
     console.log(playerInfo);
-    const otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+    let otherPlayer;
     if (playerInfo.team === 'blue') {
-      otherPlayer.setTint(0x0000ff);
+      otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
-      otherPlayer.setTint(0xFF0000);
+      otherPlayer = this.add.sprite(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
+
     otherPlayer.playerId = playerInfo.playerId;
     otherPlayer.team = playerInfo.team;
     this.otherPlayers.add(otherPlayer);
   }
 
   addPlayer = (playerInfo) => {
-    this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-
+    // eslint-disable-next-line no-unused-expressions
+    this.ship;
     if (playerInfo.team === 'blue') {
-      this.ship.setTint(0x0000ff);
-      // this.ship.setMaxVelocity(100);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     } else {
-      this.ship.setTint(0xFF0000);
+      this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
+
     this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
   }
