@@ -73,6 +73,7 @@ class GameScene extends Scene {
       });
     });
     this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.countDownText = this.add.text(284, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
     this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
     this.socket.on('scoreUpdate', (scores) => {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
@@ -91,11 +92,8 @@ class GameScene extends Scene {
     this.switchstate = 0;
     this.fireDuration = [];
     this.game.input.keyboard.clearCaptures();
-    // this.socket.on('fireLocation', () => {
-    // if (!this.fire) {
-    // this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-    // }
-    // });
+    this.countDown = this.time.delayedCall(60000, this.onEvent, [], this);
+
     this.fired = false;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired) {
@@ -138,6 +136,10 @@ class GameScene extends Scene {
         console.log(this.hitstaken);
       }
     });
+  }
+
+  onEvent = () => {
+    this.countDownText.setText('Times up');
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -191,6 +193,9 @@ class GameScene extends Scene {
   }
 
   update() {
+    // this.countDownText.setText(`${this.countDown.getProgress.toString.}`);
+
+    this.countDownText.setText(`${this.countDown.getElapsed().toString()}`);
     if (this.ship) {
       if (this.ship.alpha < 1) {
         this.ship.alpha += 0.01;
