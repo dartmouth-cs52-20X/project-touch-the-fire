@@ -30,8 +30,8 @@ class GameScene extends Scene {
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
-    this.cameras.main.setBackgroundColor('#B5651D');
-    this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 60, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
+    this.cameras.main.setBackgroundColor('#086100');
+    this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 20, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
 
     this.otherPlayers = this.physics.add.group();
     fbase.auth().onAuthStateChanged((user) => {
@@ -74,7 +74,9 @@ class GameScene extends Scene {
       });
     });
     this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
-    this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
+    this.countDownText = this.add.text(this.game.canvas.width * 0.5, 16, '', { fontSize: '32px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
+    this.redScoreText = this.add.text(this.game.canvas.width * 0.8, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
+
     this.socket.on('scoreUpdate', (scores) => {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
       this.redScoreText.setText(`Red: ${scores.red}`);
@@ -92,6 +94,7 @@ class GameScene extends Scene {
     this.switchstate = 0;
     this.fireDuration = [];
     this.game.input.keyboard.clearCaptures();
+    this.countDown = this.time.delayedCall(60000, this.onEvent, [], this);
     this.fired = false;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired) {
@@ -104,6 +107,11 @@ class GameScene extends Scene {
     this.input.keyboard.on('keyup_SPACE', () => {
       this.fired = !this.fired;
     });
+    this.socket.on('timeUpdate', (time) => {
+      const seconds = 60 - this.countDown.getElapsed() / 1000;
+      this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    });
+
     this.lasers = [];
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
@@ -141,6 +149,11 @@ class GameScene extends Scene {
         });
       }
     });
+  }
+
+  onEvent = () => {
+    this.socket.emit('calcFireTime', this.fireDuration.length);
+    this.countDownText.setText('Times up');
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -206,6 +219,10 @@ class GameScene extends Scene {
   }
 
   update() {
+    // this.countDownText.setText(`${this.countDown.getProgress.toString.}`);
+    // const seconds = 60 - this.countDown.getElapsed() / 1000;
+    // this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    this.socket.emit('updateTime');
     if (this.ship) {
       if (this.hitstaken >= 3) {
         this.ship.x = 50;
