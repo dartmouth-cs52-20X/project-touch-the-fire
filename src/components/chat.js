@@ -81,13 +81,6 @@ class Chat extends Component {
     this.setState({ message: event.target.value });
   }
 
-  onClickPowerUp = (event, valinput) => {
-    // const curr = $('img', this).attr('alt');
-    // console.log(curr);
-    console.log(valinput);
-    this.setState({ clicked: valinput });
-  }
-
   onPowerUp(imgAttr) {
     this.setState({ clicked: imgAttr });
   }
