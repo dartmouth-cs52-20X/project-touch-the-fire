@@ -23,7 +23,7 @@ class LandingPage extends Component {
     fbase.auth().signInAnonymously().then((u) => {
       console.log(u);
       // Store the guest username in the Redux store (taken from the one generated in the landing page)
-      this.props.signIn(`Guest${u.user.uid.substring(0, 4)}`);
+      this.props.signIn(`Guest_${u.user.uid.substring(0, 4)}`);
     }).catch((err) => {
       console.log(err);
     });
@@ -36,7 +36,7 @@ class LandingPage extends Component {
         if (user.displayName) {
           this.props.signIn(user.displayName);
         } else {
-          this.props.signIn(`Guest${user.uid.substring(0, 4)}`);
+          this.props.signIn(`Guest_${user.uid.substring(0, 4)}`);
         }
       } else {
         this.setState({ user: null });
@@ -65,6 +65,9 @@ class LandingPage extends Component {
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>
+          </div>
+          <div>
+            <NavLink to="/queue"><button type="button" className="button-var2">Queue</button></NavLink>
           </div>
         </div>
       );

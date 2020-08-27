@@ -5,11 +5,6 @@ import { withRouter } from 'react-router-dom';
 import { setChatMessages, createChatMessage, clearChat } from '../actions';
 import socket from '../config/socket';
 
-// For testing
-// const socketserver = 'http://localhost:9090';
-// For deploying
-// const socketserver = 'https://touch-the-fire-api.herokuapp.com/';
-// const socketserver = 'https://touchthefirechat.herokuapp.com/';
 class Chat extends Component {
   constructor(props) {
     super(props);
@@ -17,13 +12,6 @@ class Chat extends Component {
     this.state = {
       message: '',
     };
-
-    // Setting up the socket
-    // this.socket = io(socketserver);
-    // socket.on('connect', () => { console.log('socket.io connected'); });
-    // socket.on('disconnect', () => { console.log('socket.io disconnected'); });
-    // socket.on('reconnect', () => { console.log('socket.io reconnected'); });
-    // socket.on('error', (error) => { console.log(error); });
 
     socket.emit('getInitialChats');
   }
@@ -37,7 +25,6 @@ class Chat extends Component {
   }
 
   // Event listener for submiting a new chat message
-  // If in guest mode, set the username to 'Guest' --> probably want to store the generated guest ID from the landing page in the redux store and use that instead
   // Only want to send message if the it is not ''
   onSubmitClick = (event) => {
     if (this.state.message !== '') {

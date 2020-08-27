@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import '../style.scss';
@@ -12,6 +13,7 @@ import SignUp from './sign-up';
 import LandingPage from './landing-page';
 import Leaderboard from './leaderboard';
 import Instructions from './instructions';
+import queueing_page from './queueing_page';
 
 const FallBack = (props) => {
   return <div>URL Not Found</div>;
@@ -60,6 +62,7 @@ class App extends Component {
             <Route path="/signup" component={SignUp} />
             <Route path="/leaderboard" component={Leaderboard} />
             <Route path="/instructions" component={Instructions} />
+            <Route path="/queue" component={queueing_page} />
             <Route component={FallBack} />
           </Switch>
         </div>

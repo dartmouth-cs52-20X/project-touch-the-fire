@@ -46,7 +46,7 @@ class SignUp extends Component {
     fbase.auth().signInAnonymously().then((u) => {
       console.log(u);
       // Store the guest username in the Redux store (taken from the one generated in the landing page)
-      this.props.signIn(`Guest${u.user.uid.substring(0, 4)}`);
+      this.props.signIn(`Guest_${u.user.uid.substring(0, 4)}`);
     }).catch((err) => { console.log(err); });
   }
 
