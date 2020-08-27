@@ -29,8 +29,8 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    // this.socket = io('localhost:9090');
+    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('localhost:9090');
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -106,8 +106,8 @@ class GameScene extends Scene {
     this.okoverlap = 0;
     this.switchstate = 0;
     this.fireDuration = [];
+    this.firescorethreshold = 0;
     this.game.input.keyboard.clearCaptures();
-    this.countDown = this.time.delayedCall(60000, this.onEvent, [], this);
     this.fired = false;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired) {
@@ -120,9 +120,8 @@ class GameScene extends Scene {
     this.input.keyboard.on('keyup_SPACE', () => {
       this.fired = !this.fired;
     });
-    this.socket.on('timeUpdate', (time) => {
-      const seconds = 60 - this.countDown.getElapsed() / 1000;
-      this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
+    this.socket.on('tick', (time) => {
+      this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
     });
 
     this.lasers = [];
@@ -141,6 +140,24 @@ class GameScene extends Scene {
           this.lasers.splice(index, 1);
         }
       });
+    });
+    this.gameendtext = this.add.text((this.game.canvas.width / 2) - 100, this.game.canvas.height / 2, '', { fontSize: '60px', fill: '#FFFF00' }).setScrollFactor(0);
+    this.socket.on('gameover', (data) => {
+      this.gameendtext.setText(`${data.text}`);
+    });
+
+    this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
+    this.socket.on('restarttick', (time) => {
+      this.restartin.setText(`New Game Starts In ${time}`);
+    });
+
+    this.socket.on('restart', (payload) => {
+      this.gameendtext.setText('');
+      this.restartin.setText('');
+      this.ship.x = 50;
+      this.ship.y = 50;
+      this.hitstaken = 0;
+      this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
 
     this.hitstaken = 0;
@@ -162,11 +179,6 @@ class GameScene extends Scene {
         });
       }
     });
-  }
-
-  onEvent = () => {
-    this.socket.emit('calcFireTime', this.fireDuration.length);
-    this.countDownText.setText('Times up');
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -210,8 +222,12 @@ class GameScene extends Scene {
     // logs the times / durations that you touched the fire, will update this to calculate the length of time
     // can do calc at the end of the match too maybe?
     const d = new Date();
-    console.log(`touching fire at ${d.toLocaleTimeString()}.${(`000${d.getMilliseconds()}`).substr(-3)}`);
+    // console.log(`touching fire at ${d.toLocaleTimeString()}.${(`000${d.getMilliseconds()}`).substr(-3)}`);
     this.fireDuration.push(d);
+    if (this.fireDuration.length >= this.firescorethreshold + 100) {
+      this.firescorethreshold = this.fireDuration.length;
+      this.socket.emit('calcFireTime', { weight: 1 });
+    }
   }
 
   checkOverlap = (spriteA, spriteB) => {
@@ -233,10 +249,6 @@ class GameScene extends Scene {
   }
 
   update() {
-    // this.countDownText.setText(`${this.countDown.getProgress.toString.}`);
-    // const seconds = 60 - this.countDown.getElapsed() / 1000;
-    // this.countDownText.setText(`0:${seconds.toString().substring(0, 2)}`);
-    this.socket.emit('updateTime');
     if (this.ship) {
       if (this.hitstaken >= 3) {
         this.ship.x = 50;
