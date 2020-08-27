@@ -5,9 +5,9 @@ import io from 'socket.io-client';
 import { setChatMessages, createChatMessage, clearChat } from '../actions';
 
 // For testing
-// const socketserver = 'http://localhost:9090';
+const socketserver = 'http://localhost:9090';
 // For deploying
-const socketserver = 'https://touch-the-fire-api.herokuapp.com/';
+// const socketserver = 'https://touch-the-fire-api.herokuapp.com/';
 
 class Chat extends Component {
   constructor(props) {
