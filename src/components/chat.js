@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 // import io from 'socket.io-client';
-import { setChatMessages, createChatMessage, clearChat } from '../actions';
+import {
+  setChatMessages, createChatMessage, clearChat,
+} from '../actions';
 import socket from '../config/socket';
 
 class Chat extends Component {
@@ -52,6 +54,7 @@ class Chat extends Component {
       );
       // Re-set the local message state to '' after sending a message
       this.setState({ message: '' });
+      event.target.blur();
     }
   }
 
