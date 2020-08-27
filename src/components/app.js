@@ -13,6 +13,7 @@ import Chat from './chat';
 import LandingPage from './landing-page';
 import Leaderboard from './leaderboard';
 import Instructions from './instructions';
+import PrivateRoute from './privateroute';
 
 const FallBack = (props) => {
   return <div>URL Not Found</div>;
@@ -56,12 +57,12 @@ class App extends Component {
           {this.renderNav()}
           <Switch>
             <Route exact path="/" component={LandingPage} />
-            <Route path="/game" component={Game} />
+            <PrivateRoute path="/game" component={Game} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
-            <Route path="/leaderboard" component={Leaderboard} />
-            <Route path="/chat" component={Chat} />
-            <Route path="/instructions" component={Instructions} />
+            <PrivateRoute path="/leaderboard" component={Leaderboard} />
+            <PrivateRoute path="/chat" component={Chat} />
+            <PrivateRoute path="/instructions" component={Instructions} />
             <Route component={FallBack} />
           </Switch>
         </div>
