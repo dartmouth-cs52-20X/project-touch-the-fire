@@ -33,6 +33,11 @@ class LandingPage extends Component {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
+        if (user.displayName) {
+          this.props.signIn(user.displayName);
+        } else {
+          this.props.signIn(`Guest${user.uid.substring(0, 4)}`);
+        }
       } else {
         this.setState({ user: null });
       }
@@ -40,20 +45,6 @@ class LandingPage extends Component {
   }
 
   renderWelcomeMessage() {
-    // if (fbase.auth().currentUser) {
-    //   if (fbase.auth().currentUser.displayName) {
-    //     return (
-    //       <h1>Welcome, {fbase.auth().currentUser.displayName}!</h1>
-    //     );
-    //   } else {
-    //     const guestID = fbase.auth().currentUser.uid.substring(0, 4);
-    //     return (
-    //       <h1>Welcome, Guest {guestID}!</h1>
-    //     );
-    //   }
-    // } else {
-    //   return null;
-    // }
     return (
       <h1>Welcome, {this.props.current_user}!</h1>
     );
@@ -70,7 +61,7 @@ class LandingPage extends Component {
             <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
-            <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
+            <NavLink to="/instructions"><button type="button" className="button-var2">Instructions</button></NavLink>
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>

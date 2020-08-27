@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import { setChatMessages, createChatMessage, clearChat } from '../actions';
+import socket from '../config/socket';
 
 // For testing
-const socketserver = 'http://localhost:9090';
+// const socketserver = 'http://localhost:9090';
 // For deploying
 // const socketserver = 'https://touch-the-fire-api.herokuapp.com/';
-
+// const socketserver = 'https://touchthefirechat.herokuapp.com/';
 class Chat extends Component {
   constructor(props) {
     super(props);
@@ -18,16 +19,18 @@ class Chat extends Component {
     };
 
     // Setting up the socket
-    this.socket = io(socketserver);
-    this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.socket.on('disconnect', () => { console.log('socket.io disconnected'); });
-    this.socket.on('reconnect', () => { console.log('socket.io reconnected'); });
-    this.socket.on('error', (error) => { console.log(error); });
+    // this.socket = io(socketserver);
+    // socket.on('connect', () => { console.log('socket.io connected'); });
+    // socket.on('disconnect', () => { console.log('socket.io disconnected'); });
+    // socket.on('reconnect', () => { console.log('socket.io reconnected'); });
+    // socket.on('error', (error) => { console.log(error); });
+
+    socket.emit('getInitialChats');
   }
 
   // Get the previous chat messages when you open the chat
   componentDidMount() {
-    this.socket.on('chatMessages', (chatMessages) => {
+    socket.on('chatMessages', (chatMessages) => {
       console.log('chats received');
       this.props.setChatMessages(chatMessages);
     });
@@ -39,7 +42,7 @@ class Chat extends Component {
   onSubmitClick = (event) => {
     if (this.state.message !== '') {
       this.props.createChatMessage(
-        this.socket,
+        socket,
         {
           username: this.props.current_user,
           message: this.state.message,
@@ -54,7 +57,7 @@ class Chat extends Component {
   onEnterPress = (event) => {
     if (event.key === 'Enter' && this.state.message !== '') {
       this.props.createChatMessage(
-        this.socket,
+        socket,
         {
           username: this.props.current_user,
           message: this.state.message,
@@ -67,7 +70,7 @@ class Chat extends Component {
 
   // Temporary to empty the chat --> really would want to call a method from the end game screen to clear the chat before the next round
   onClearPress = (event) => {
-    this.props.clearChat(this.socket);
+    this.props.clearChat(socket);
   }
 
   // Event listener for changing the message input box
