@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import '../style.scss';
@@ -9,10 +10,10 @@ import Game from '../game';
 import Nav from './nav';
 import SignIn from './sign-in';
 import SignUp from './sign-up';
-import Chat from './chat';
 import LandingPage from './landing-page';
 import Leaderboard from './leaderboard';
 import Instructions from './instructions';
+import queueing_page from './queueing_page';
 import PrivateRoute from './privateroute';
 
 const FallBack = (props) => {
@@ -61,7 +62,7 @@ class App extends Component {
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
             <PrivateRoute path="/leaderboard" component={Leaderboard} />
-            <PrivateRoute path="/chat" component={Chat} />
+            <PrivateRoute path="/queue" component={queueing_page} />
             <PrivateRoute path="/instructions" component={Instructions} />
             <Route component={FallBack} />
           </Switch>

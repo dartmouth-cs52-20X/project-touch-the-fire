@@ -16,12 +16,6 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this.handleAuthChange();
-    /*  setInterval(() => {
-      if (window.location.href === 'http://localhost:8080/' || window.location.href === 'http://touch-the-fire.surge.sh/' || window.location.href === 'http://touch2-the-fire.surge.sh/') {
-        window.location += '#loaded';
-        window.location.reload();
-      }
-    }, 1000); */
   }
 
   handleGuestLogin = (event) => {
@@ -29,7 +23,7 @@ class LandingPage extends Component {
     fbase.auth().signInAnonymously().then((u) => {
       console.log(u);
       // Store the guest username in the Redux store (taken from the one generated in the landing page)
-      this.props.signIn(`Guest${u.user.uid.substring(0, 4)}`);
+      this.props.signIn(`Guest_${u.user.uid.substring(0, 4)}`);
     }).catch((err) => {
       console.log(err);
     });
@@ -42,7 +36,7 @@ class LandingPage extends Component {
         if (user.displayName) {
           this.props.signIn(user.displayName);
         } else {
-          this.props.signIn(`Guest${user.uid.substring(0, 4)}`);
+          this.props.signIn(`Guest_${user.uid.substring(0, 4)}`);
         }
       } else {
         this.setState({ user: null });
@@ -64,13 +58,10 @@ class LandingPage extends Component {
             {this.renderWelcomeMessage()}
           </div>
           <div>
-            <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
+            <NavLink to="/queue"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
             <NavLink to="/instructions"><button type="button" className="button-var2">Instructions</button></NavLink>
-          </div>
-          <div>
-            <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>
