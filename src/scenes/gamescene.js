@@ -31,6 +31,7 @@ class GameScene extends Scene {
   create() {
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
+    console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -121,7 +122,12 @@ class GameScene extends Scene {
       this.fired = !this.fired;
     });
     this.socket.on('tick', (time) => {
-      this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      try {
+        this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.lasers = [];
@@ -150,7 +156,12 @@ class GameScene extends Scene {
     this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
 
     this.socket.on('restarttick', (time) => {
-      this.restartin.setText(`New Game Starts In ${time}`);
+      try {
+        this.restartin.setText(`New Game Starts In ${time}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.socket.on('restart', (payload) => {
@@ -248,6 +259,10 @@ class GameScene extends Scene {
   }
 
   update() {
+    if (!this.game.isRunning) {
+      this.socket.emit('disconnect', () => { console.log('game ended'); });
+      console.log('disconnect');
+    }
     if (this.ship) {
       if (this.hitstaken >= 3) {
         this.ship.x = 50;
