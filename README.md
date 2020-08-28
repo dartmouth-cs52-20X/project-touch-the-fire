@@ -31,7 +31,7 @@ This project requires both the code in this repo and the [server repo](https://g
 
 ### Client Repo
 
-Find our dev site [here.](http://touch-the-fire.surge.sh/)
+Find our dev site [here.](http://touch2-the-fire.surge.sh/)
 
 The game is hosted locally on port 8080.
 

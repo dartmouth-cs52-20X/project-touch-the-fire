@@ -14,6 +14,7 @@ import LandingPage from './landing-page';
 import Leaderboard from './leaderboard';
 import Instructions from './instructions';
 import queueing_page from './queueing_page';
+import PrivateRoute from './privateroute';
 
 const FallBack = (props) => {
   return <div>URL Not Found</div>;
@@ -57,12 +58,12 @@ class App extends Component {
           {this.renderNav()}
           <Switch>
             <Route exact path="/" component={LandingPage} />
-            <Route path="/game" component={Game} />
+            <PrivateRoute path="/game" component={Game} />
             <Route path="/signin" component={SignIn} />
             <Route path="/signup" component={SignUp} />
-            <Route path="/leaderboard" component={Leaderboard} />
-            <Route path="/instructions" component={Instructions} />
-            <Route path="/queue" component={queueing_page} />
+            <PrivateRoute path="/leaderboard" component={Leaderboard} />
+            <PrivateRoute path="/queue" component={queueing_page} />
+            <PrivateRoute path="/instructions" component={Instructions} />
             <Route component={FallBack} />
           </Switch>
         </div>
