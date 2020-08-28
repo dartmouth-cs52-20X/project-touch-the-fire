@@ -1,13 +1,18 @@
+/* eslint-disable jsx-a11y/media-has-caption */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable no-unused-vars */
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import io from 'socket.io-client';
-import { setChatMessages, createChatMessage, clearChat } from '../actions';
-
-// For testing
-// const socketserver = 'http://localhost:9090';
-// For deploying
-const socketserver = 'https://touch-the-fire-api.herokuapp.com/';
+// import io from 'socket.io-client';
+import $ from 'jquery';
+import {
+  setChatMessages, createChatMessage,
+} from '../actions';
+import socket from '../config/socket';
+import keystone from '../assets/keystone.png';
+import backgroundmusic from '../assets/backgroundmusic.mp3';
 
 class Chat extends Component {
   constructor(props) {
@@ -15,31 +20,26 @@ class Chat extends Component {
 
     this.state = {
       message: '',
+      music: true,
     };
-
-    // Setting up the socket
-    this.socket = io(socketserver);
-    this.socket.on('connect', () => { console.log('socket.io connected'); });
-    this.socket.on('disconnect', () => { console.log('socket.io disconnected'); });
-    this.socket.on('reconnect', () => { console.log('socket.io reconnected'); });
-    this.socket.on('error', (error) => { console.log(error); });
+    // this.sound = new Audio(soundfile);
+    socket.emit('getInitialChats');
   }
 
   // Get the previous chat messages when you open the chat
   componentDidMount() {
-    this.socket.on('chatMessages', (chatMessages) => {
+    socket.on('chatMessages', (chatMessages) => {
       console.log('chats received');
       this.props.setChatMessages(chatMessages);
     });
   }
 
   // Event listener for submiting a new chat message
-  // If in guest mode, set the username to 'Guest' --> probably want to store the generated guest ID from the landing page in the redux store and use that instead
   // Only want to send message if the it is not ''
   onSubmitClick = (event) => {
     if (this.state.message !== '') {
       this.props.createChatMessage(
-        this.socket,
+        socket,
         {
           username: this.props.current_user,
           message: this.state.message,
@@ -54,7 +54,7 @@ class Chat extends Component {
   onEnterPress = (event) => {
     if (event.key === 'Enter' && this.state.message !== '') {
       this.props.createChatMessage(
-        this.socket,
+        socket,
         {
           username: this.props.current_user,
           message: this.state.message,
@@ -62,12 +62,8 @@ class Chat extends Component {
       );
       // Re-set the local message state to '' after sending a message
       this.setState({ message: '' });
+      event.target.blur();
     }
-  }
-
-  // Temporary to empty the chat --> really would want to call a method from the end game screen to clear the chat before the next round
-  onClearPress = (event) => {
-    this.props.clearChat(this.socket);
   }
 
   // Event listener for changing the message input box
@@ -75,16 +71,40 @@ class Chat extends Component {
     this.setState({ message: event.target.value });
   }
 
+  onMusic = (event) => {
+    // eslint-disable-next-line react/no-access-state-in-setstate
+    this.setState({ music: !this.state.music });
+  }
+
   // Want the input box to send message on enter
   // Also have a button that sends message on click
   renderMessageInputBox() {
-    return (
-      <div className="message-input-wrapper">
-        <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
-        <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
-        <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
-      </div>
-    );
+    if (this.state.music) {
+      return (
+        <div className="message-input-wrapper">
+          <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
+          <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
+          <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
+          <div id="music-toggle-off">
+            <p id="music-off" onClick={this.onMusic}>Music Off</p>
+          </div>
+
+          {/* <embed src={soundfile} autostart="true" loop="true" /> */}
+        </div>
+      );
+    } else {
+      return (
+        <div className="message-input-wrapper">
+          <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
+          <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
+          <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
+          <div id="music-toggle-on">
+            <p id="music-off" onClick={this.onMusic}>Music On</p>
+          </div>
+          <audio src={backgroundmusic} autoPlay infinite />
+        </div>
+      );
+    }
   }
 
   // Want to display all the previous chat messages
@@ -116,6 +136,7 @@ class Chat extends Component {
       <div className="chat-wrapper">
         {this.renderPreviousMessages()}
         {this.renderMessageInputBox()}
+
       </div>
     );
   }
@@ -129,4 +150,4 @@ const mapStateToProps = (ReduxState) => (
   }
 );
 
-export default withRouter(connect(mapStateToProps, { setChatMessages, createChatMessage, clearChat })(Chat));
+export default withRouter(connect(mapStateToProps, { setChatMessages, createChatMessage })(Chat));

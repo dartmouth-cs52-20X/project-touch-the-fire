@@ -23,7 +23,7 @@ class LandingPage extends Component {
     fbase.auth().signInAnonymously().then((u) => {
       console.log(u);
       // Store the guest username in the Redux store (taken from the one generated in the landing page)
-      this.props.signIn(`Guest${u.user.uid.substring(0, 4)}`);
+      this.props.signIn(`Guest_${u.user.uid.substring(0, 4)}`);
     }).catch((err) => {
       console.log(err);
     });
@@ -33,7 +33,11 @@ class LandingPage extends Component {
     fbase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
-        this.props.signIn(user.displayName);
+        if (user.displayName) {
+          this.props.signIn(user.displayName);
+        } else {
+          this.props.signIn(`Guest_${user.uid.substring(0, 4)}`);
+        }
       } else {
         this.setState({ user: null });
       }
@@ -41,20 +45,6 @@ class LandingPage extends Component {
   }
 
   renderWelcomeMessage() {
-    // if (fbase.auth().currentUser) {
-    //   if (fbase.auth().currentUser.displayName) {
-    //     return (
-    //       <h1>Welcome, {fbase.auth().currentUser.displayName}!</h1>
-    //     );
-    //   } else {
-    //     const guestID = fbase.auth().currentUser.uid.substring(0, 4);
-    //     return (
-    //       <h1>Welcome, Guest {guestID}!</h1>
-    //     );
-    //   }
-    // } else {
-    //   return null;
-    // }
     return (
       <h1>Welcome, {this.props.current_user}!</h1>
     );
@@ -68,10 +58,10 @@ class LandingPage extends Component {
             {this.renderWelcomeMessage()}
           </div>
           <div>
-            <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
+            <NavLink to="/queue"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
-            <NavLink to="/chat"><button type="button" className="button-var2">Chat</button></NavLink>
+            <NavLink to="/instructions"><button type="button" className="button-var2">Instructions</button></NavLink>
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>

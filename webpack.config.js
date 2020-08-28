@@ -8,6 +8,10 @@ const env = process.env.NODE_ENV || 'development';
 
 const finalCSSLoader = (env === 'production') ? MiniCssExtractPlugin.loader : { loader: 'style-loader' };
 
+// const path = require('path');
+
+// const SRC = path.resolve(__dirname, 'src/main/js');
+
 module.exports = {
   devServer: {
     hot: true,
@@ -53,7 +57,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/,
+        test: /\.(jpe?g|png|gif|svg|mp3|ogg)$/,
         use: [
           {
             loader: 'file-loader',
@@ -64,6 +68,11 @@ module.exports = {
           },
         ],
       },
+      // {
+      //   test: /\.mp3$/,
+      //   include: SRC,
+      //   loader: 'file-loader',
+      // },
     ],
   },
   plugins: [

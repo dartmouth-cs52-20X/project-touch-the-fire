@@ -13,6 +13,10 @@ button:focus {
   outline: none;
 }
 
+.hidden {
+  display: none;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -75,7 +79,7 @@ nav ul {
 }
 
 .landing-page-alt {
-  // background-image: url(./assets/main-background.png);
+  background-image: url(./assets/main-background.png);
   background-size: 100vw 100vh;
   display: flex;
   width: 100%;
@@ -89,22 +93,71 @@ nav ul {
   padding: 10px 0px;
 }
 
-.here-link, .landing-page-alt > h1, p {
+.here-link, .landing-page-alt > h1, .landing-page-alt > p {
   color: white;
+}
+
+
+
+.power-up-menu-container {
+  position: absolute;
+  left:80%;
+  top: 5%;
+  height:40%;
+  width: 20%;
+  z-index: 2;
+}
+
+.power-up-menu {
+  align-self: center;
+  justify-self: center;
+}
+
+.power-up-menu div h1, .power-up-menu div h3 {
+  text-align: center;
+  color: white;
+}
+
+.power-up-items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.powerup-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.powerup-item {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 50%;
+  width: 25%;
+}
+
+.powerup-item img {
+  width: 100%;
+  height: 100%;
 }
 
 // Styling the chat
 .chat-wrapper {
   margin: 0;
-  padding: 5px;
-  width: 300px;
-  height: 600px;
+  padding: 0;
+  width: 25vw;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-end;
   background-color: dimgray;
   border: 2px solid black;
+  z-index: 1;
 }
 
 .message-input-wrapper {
@@ -119,15 +172,17 @@ nav ul {
   font-size: 18px;
 
   input {
-    width: 85%;
+    width: 90%;
     font-size: 18px;
   }
 }
 
 .messages-wrapper{
   width: 100%;
-  max-height: 92%;
-  overflow: scroll;
+
+  // set height on chat
+  max-height: 60%;
+  overflow-y: scroll;
   scroll-snap-type: y proximity;
 }
 
@@ -136,8 +191,8 @@ nav ul {
   padding: 3px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-end;
+  justify-content: flex-start;
+  align-items: flex-start;
   position: static;
   scroll-snap-align: end;
 }
@@ -145,30 +200,61 @@ nav ul {
 .message-wrapper {
   margin-top: 5px;
   width: 100%;
+  max-height: 60%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
+  flex-wrap: wrap-reverse;
+}
+
+.message-wrapper .message-text {
+  flex-wrap: wrap-reverse;
+
 }
 
 .message-username {
   font-size: 12px;
   color: blue;
-  text-align: right;
+  text-align: left;
 }
 
 .message-text {
   font-size: 18px;
   color: white;
-  text-align: right;
+  text-align: left;
 }
 
-.game-wrapper .chat-wrapper{
+.game-wrapper .chat-wrapper {
   position: absolute;
   left:80%;
   top: 5%;
-  height:100%;
+  height: 95vh;
   width: 20%;
+  margin: 0;
+  padding: 0;
+}
+
+#music-toggle-on {
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid black;
+  background-color: rgb(151, 196, 151);
+}
+
+#music-toggle-off {
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid black;
+  background-color: rgb(243, 186, 184);
+}
+
+#music-on {
+  color: black;
+}
+
+#music-off {
+  color: black;
 }
 
 #lb-entry{
@@ -190,10 +276,13 @@ nav ul {
 }
 
 #lb-page{
+  background-size: cover;
+  background-image: url(./assets/main-background.png);
+  // background-size: 100vw 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10vw 10vw;
+  // margin: 10vw 10vw;
 }
 
 #leaderboard-top{
@@ -210,4 +299,54 @@ nav ul {
 #lb-title {
   font-size: 175%;
   margin: 0 0 2vw 0;
+}
+
+#instructions-page{
+  width: 100%;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#instructions-page > div {
+  padding: 10px 50px;
+}
+
+.controls-list{
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;;
+}
+
+.sign-in-up-fail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba($color: red, $alpha: 0.3);
+  padding: 20px;
+  border-radius: 20px;
+}
+
+// Styling the queueing page
+.queue-page-wrapper {
+  background-image: url(./assets/green.png);
+  background-size: 100vw 95vh;
+  display: flex;
+  width: 100%;
+  height: 95vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    margin-top: 20px;
+  }
+  button {
+    margin-top: 20px;
+  }
 }
