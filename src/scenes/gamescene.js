@@ -4,8 +4,8 @@ import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import fbase from '../config/fire';
 import money from '../assets/money.png';
-import blueplayer from '../assets/blue_player.png';
-import redplayer from '../assets/red_player.png';
+import blueplayer from '../assets/blue_above3.png';
+import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
@@ -19,6 +19,7 @@ class GameScene extends Scene {
   }
 
   preload() {
+  //  this.load.spritesheet('blueplayer', '../assets/blue_spritesheet.png', 662, 389);
     this.load.image('blueplayer', blueplayer);
     this.load.image('redplayer', redplayer);
     this.load.image('money', money);
@@ -202,6 +203,13 @@ class GameScene extends Scene {
     this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.anims.create({
+      //   key: 'move',
+      //   frames: this.anims.generateFrameNumbers('blueplayer', { start: 0, end: 4 }),
+      //   frameRate: 5,
+      //   repeat: -1,
+      // });
     } else {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }

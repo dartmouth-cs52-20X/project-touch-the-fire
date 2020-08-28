@@ -144,9 +144,9 @@ nav ul {
 // // Styling the chat
 .chat-wrapper {
   margin: 0;
-  padding: 5px;
-  width: 300px;
-  height: 600px;
+  padding: 0;
+  width: 25vw;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -224,8 +224,10 @@ nav ul {
   position: absolute;
   left:80%;
   top: 5%;
-  height:100%;
+  height: 95vh;
   width: 20%;
+  margin: 0;
+  padding: 0;
 }
 
 #lb-entry{
@@ -288,4 +290,3 @@ nav ul {
   width: 100%;
   justify-content: space-evenly;;
 }
-
