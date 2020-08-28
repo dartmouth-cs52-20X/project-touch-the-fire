@@ -9,12 +9,9 @@ import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
-<<<<<<< HEAD
 import shootNoise from '../assets/shoot.mp3';
-=======
 // import icepng from '../assets/fonts/bitmap/iceicebaby.png';
 // import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
->>>>>>> 8800a5b424eff5a5231ee69ebcf0f8051a35c544
 
 const MAP_VIEW_MULT = 2;
 class GameScene extends Scene {
@@ -32,11 +29,8 @@ class GameScene extends Scene {
     this.load.image('fire', fire);
     this.load.image('green', green);
     this.load.image('keystone', keystone);
-<<<<<<< HEAD
     this.load.audio('pewpew', shootNoise);
-=======
     // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
->>>>>>> 8800a5b424eff5a5231ee69ebcf0f8051a35c544
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
