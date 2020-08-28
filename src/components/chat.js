@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/media-has-caption */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
@@ -11,6 +12,7 @@ import {
 } from '../actions';
 import socket from '../config/socket';
 import keystone from '../assets/keystone.png';
+import backgroundmusic from '../assets/backgroundmusic.mp3';
 
 class Chat extends Component {
   constructor(props) {
@@ -18,8 +20,9 @@ class Chat extends Component {
 
     this.state = {
       message: '',
+      music: true,
     };
-
+    // this.sound = new Audio(soundfile);
     socket.emit('getInitialChats');
   }
 
@@ -68,15 +71,40 @@ class Chat extends Component {
     this.setState({ message: event.target.value });
   }
 
+  onMusic = (event) => {
+    // eslint-disable-next-line react/no-access-state-in-setstate
+    this.setState({ music: !this.state.music });
+  }
+
   // Want the input box to send message on enter
   // Also have a button that sends message on click
   renderMessageInputBox() {
-    return (
-      <div className="message-input-wrapper">
-        <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
-        <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
-      </div>
-    );
+    if (this.state.music) {
+      return (
+        <div className="message-input-wrapper">
+          <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
+          <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
+          <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
+          <div id="music-toggle-off">
+            <p id="music-off" onClick={this.onMusic}>Music Off</p>
+          </div>
+
+          {/* <embed src={soundfile} autostart="true" loop="true" /> */}
+        </div>
+      );
+    } else {
+      return (
+        <div className="message-input-wrapper">
+          <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
+          <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
+          <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
+          <div id="music-toggle-on">
+            <p id="music-off" onClick={this.onMusic}>Music On</p>
+          </div>
+          <audio src={backgroundmusic} autoPlay infinite />
+        </div>
+      );
+    }
   }
 
   // Want to display all the previous chat messages
