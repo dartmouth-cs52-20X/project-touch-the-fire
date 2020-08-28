@@ -16,12 +16,12 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this.handleAuthChange();
-    setInterval(() => {
+    /*  setInterval(() => {
       if (window.location.href === 'http://localhost:8080/' || window.location.href === 'http://touch-the-fire.surge.sh/' || window.location.href === 'http://touch2-the-fire.surge.sh/') {
         window.location += '#loaded';
         window.location.reload();
       }
-    }, 1000);
+    }, 1000); */
   }
 
   handleGuestLogin = (event) => {
