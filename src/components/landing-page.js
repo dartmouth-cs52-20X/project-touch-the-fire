@@ -16,12 +16,6 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this.handleAuthChange();
-    setInterval(() => {
-      if (window.location.href === 'http://localhost:8080/' || window.location.href === 'http://touch-the-fire.surge.sh/' || window.location.href === 'http://touch2-the-fire.surge.sh/') {
-        window.location += '#loaded';
-        window.location.reload();
-      }
-    }, 1000);
   }
 
   handleGuestLogin = (event) => {
@@ -64,16 +58,13 @@ class LandingPage extends Component {
             {this.renderWelcomeMessage()}
           </div>
           <div>
-            <NavLink to="/game"><button type="button" className="button-var2">Play</button></NavLink>
+            <NavLink to="/queue"><button type="button" className="button-var2">Play</button></NavLink>
           </div>
           <div>
             <NavLink to="/instructions"><button type="button" className="button-var2">Instructions</button></NavLink>
           </div>
           <div>
             <NavLink to="/leaderboard"><button type="button" className="button-var2">Leaderboard</button></NavLink>
-          </div>
-          <div>
-            <NavLink to="/queue"><button type="button" className="button-var2">Queue</button></NavLink>
           </div>
         </div>
       );

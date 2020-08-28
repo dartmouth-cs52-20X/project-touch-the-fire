@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable react/state-in-constructor */
 import React, { Component } from 'react';
 import Phaser from 'phaser';
@@ -7,28 +8,56 @@ import { signIn } from './actions';
 import GameScene from './scenes/gamescene';
 import fbase from './config/fire';
 import Chat from './components/chat';
+import socket from './config/socket';
 
 class Game extends Component {
-  state = {
-    initialize: true,
-    game: {
-      type: Phaser.AUTO,
-      width: '80%',
-      height: '100%',
-      physics: {
-        default: 'arcade',
-        arcade: {
-          debug: false,
-          gravity: { y: 0 },
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      initialize: true,
+      game: {
+        type: Phaser.AUTO,
+        width: '80%',
+        height: '100%',
+        physics: {
+          default: 'arcade',
+          arcade: {
+            debug: false,
+            gravity: { y: 0 },
+          },
         },
+        scene: [GameScene],
       },
-      scene: [GameScene],
-    },
-  };
+    };
+
+    socket.emit('add me to the game');
+  }
+  // state = {
+  //   initialize: true,
+  //   game: {
+  //     type: Phaser.AUTO,
+  //     width: '80%',
+  //     height: '100%',
+  //     physics: {
+  //       default: 'arcade',
+  //       arcade: {
+  //         debug: false,
+  //         gravity: { y: 0 },
+  //       },
+  //     },
+  //     scene: [GameScene],
+  //   },
+  // };
 
   // Setting username in the Redux store if the user refreshes the page
   componentDidMount() {
     this.handleAuthChange();
+  }
+
+  // If you leave the game page, want to be removed from the game
+  componentWillUnmount() {
+    socket.emit('remove me from the game');
   }
 
   handleAuthChange() {

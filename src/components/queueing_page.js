@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { signIn } from '../actions';
 import socket from '../config/socket';
@@ -10,22 +10,16 @@ class QueueingPage extends Component {
     super(props);
 
     this.state = {
-      current_queue_length: 0,
+      current_game_size: 0,
     };
 
-    socket.emit('add me to the queue');
+    socket.emit('add me to the waiting queue');
   }
 
   // Adding event listeners
   componentDidMount() {
-    socket.on('current queue length', (length) => {
-      this.setState({ current_queue_length: length });
-    });
-    socket.on('go to the game', () => {
-      this.props.history.push('/game');
-    });
-    window.addEventListener('unload', (event) => {
-      socket.emit('remove me from the queue');
+    socket.on('current game size', (length) => {
+      this.setState({ current_game_size: length });
     });
     // To set the username in the Redux store if the user refreshes the page
     this.handleAuthChange();
@@ -49,12 +43,23 @@ class QueueingPage extends Component {
   }
 
   render() {
-    return (
-      <div className="queue-page-wrapper">
-        <h1>Waiting for more players...</h1>
-        <h2>{this.state.current_queue_length}/6 players have joined</h2>
-      </div>
-    );
+    // If the game is full
+    if (this.state.current_game_size >= 6) {
+      return (
+        <div className="queue-page-wrapper">
+          <h1>The current game is full. You will be able to join soon.</h1>
+          <h2>{this.state.current_game_size}/6 players have joined the game.</h2>
+        </div>
+      );
+    } else { // If the game is not yet at full capacity
+      return (
+        <div className="queue-page-wrapper">
+          <h1>You can join the current game!</h1>
+          <h2>{this.state.current_game_size}/6 players have joined the game.</h2>
+          <NavLink to="/game"><button type="button" className="button-var2">Join Game</button></NavLink>
+        </div>
+      );
+    }
   }
 }
 
