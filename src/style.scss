@@ -79,7 +79,7 @@ nav ul {
 }
 
 .landing-page-alt {
-  // background-image: url(./assets/main-background.png);
+  background-image: url(./assets/main-background.png);
   background-size: 100vw 100vh;
   display: flex;
   width: 100%;
@@ -101,11 +101,11 @@ nav ul {
 
 .power-up-menu-container {
   position: absolute;
-  left:.5%;
-  top: 0%;
-  height: 25%;
-  width: 100%;
-
+  left:80%;
+  top: 5%;
+  height:40%;
+  width: 20%;
+  z-index: 2;
 }
 
 .power-up-menu {
@@ -145,7 +145,7 @@ nav ul {
   height: 100%;
 }
 
-// // Styling the chat
+// Styling the chat
 .chat-wrapper {
   margin: 0;
   padding: 0;
@@ -157,6 +157,7 @@ nav ul {
   justify-content: flex-end;
   background-color: dimgray;
   border: 2px solid black;
+  z-index: 1;
 }
 
 .message-input-wrapper {
@@ -171,7 +172,7 @@ nav ul {
   font-size: 18px;
 
   input {
-    width: 85%;
+    width: 90%;
     font-size: 18px;
   }
 }
@@ -224,7 +225,7 @@ nav ul {
   text-align: left;
 }
 
-.game-wrapper .chat-wrapper{
+.game-wrapper .chat-wrapper {
   position: absolute;
   left:80%;
   top: 5%;
@@ -253,10 +254,13 @@ nav ul {
 }
 
 #lb-page{
+  background-size: cover;
+  background-image: url(./assets/main-background.png);
+  // background-size: 100vw 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10vw 10vw;
+  // margin: 10vw 10vw;
 }
 
 #leaderboard-top{
@@ -304,4 +308,23 @@ nav ul {
   background-color: rgba($color: red, $alpha: 0.3);
   padding: 20px;
   border-radius: 20px;
+}
+
+// Styling the queueing page
+.queue-page-wrapper {
+  background-image: url(./assets/green.png);
+  background-size: 100vw 95vh;
+  display: flex;
+  width: 100%;
+  height: 95vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    margin-top: 20px;
+  }
+  button {
+    margin-top: 20px;
+  }
 }
