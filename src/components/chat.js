@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 // import io from 'socket.io-client';
 import $ from 'jquery';
 import {
-  setChatMessages, createChatMessage, clearChat,
+  setChatMessages, createChatMessage,
 } from '../actions';
 import socket from '../config/socket';
 import keystone from '../assets/keystone.png';
@@ -64,11 +64,6 @@ class Chat extends Component {
     }
   }
 
-  // Temporary to empty the chat --> really would want to call a method from the end game screen to clear the chat before the next round
-  onClearPress = (event) => {
-    this.props.clearChat(socket);
-  }
-
   // Event listener for changing the message input box
   onMessageChange = (event) => {
     this.setState({ message: event.target.value });
@@ -85,7 +80,6 @@ class Chat extends Component {
       <div className="message-input-wrapper">
         <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
         <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
-        <i className="fas fa-trash" onClick={this.onClearPress} role="button" tabIndex={0} aria-label="submit" />
       </div>
     );
   }
@@ -176,4 +170,4 @@ const mapStateToProps = (ReduxState) => (
   }
 );
 
-export default withRouter(connect(mapStateToProps, { setChatMessages, createChatMessage, clearChat })(Chat));
+export default withRouter(connect(mapStateToProps, { setChatMessages, createChatMessage })(Chat));
