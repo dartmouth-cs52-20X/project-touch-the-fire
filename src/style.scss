@@ -97,11 +97,11 @@ nav ul {
 
 .power-up-menu-container {
   position: absolute;
-  left:.5%;
-  top: 0%;
-  height: 25%;
-  width: 100%;
-
+  left:80%;
+  top: 5%;
+  height:40%;
+  width: 20%;
+  z-index: 2;
 }
 
 .power-up-menu {
@@ -153,6 +153,7 @@ nav ul {
   justify-content: flex-end;
   background-color: dimgray;
   border: 2px solid black;
+  z-index: 1;
 }
 
 .message-input-wrapper {
@@ -220,7 +221,7 @@ nav ul {
   text-align: left;
 }
 
-.game-wrapper .chat-wrapper{
+.game-wrapper .chat-wrapper {
   position: absolute;
   left:80%;
   top: 5%;

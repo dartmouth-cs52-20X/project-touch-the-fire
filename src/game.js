@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { IonPhaser } from '@ion-phaser/react';
 import GameScene from './scenes/gamescene';
 import Chat from './components/chat';
+import PowerUp from './components/powerup-menu';
 
 class Game extends Component {
   state = {
@@ -29,7 +30,10 @@ class Game extends Component {
       <div className="game-wrapper">
         <div>
           <IonPhaser game={game} initialize={initialize} />
-          <Chat id="chat" />
+          <div className="big-chat-wrapper">
+            <PowerUp id="game-pmenu" />
+            <Chat id="chat" />
+          </div>
         </div>
       </div>
 
