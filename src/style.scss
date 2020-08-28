@@ -13,6 +13,10 @@ button:focus {
   outline: none;
 }
 
+.hidden {
+  display: none;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -289,4 +293,15 @@ nav ul {
   display: flex;
   width: 100%;
   justify-content: space-evenly;;
+}
+
+.sign-in-up-fail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba($color: red, $alpha: 0.3);
+  padding: 20px;
+  border-radius: 20px;
 }

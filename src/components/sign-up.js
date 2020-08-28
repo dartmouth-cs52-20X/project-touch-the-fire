@@ -34,11 +34,15 @@ class SignUp extends Component {
         this.props.signIn(this.state.username);
       }).catch((err) => { console.log(err); });
       console.log(u);
+
+      document.getElementById('sign-up-failed').classList.add('hidden');
+      document.getElementById('sign-up-failed').classList.remove('sign-in-up-fail');
+      this.props.history.push('/');
     }).catch((err) => {
       console.log(err);
+      document.getElementById('sign-in-failed').classList.remove('hidden');
+      document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
     });
-
-    this.props.history.push('/');
   }
 
   handleGuestLogin = (event) => {
@@ -60,6 +64,11 @@ class SignUp extends Component {
           <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
           <NavLink to="/"><button type="button" onClick={this.handleSignUpPress} className="button-var1">Sign Up</button></NavLink>
           <p>Already have an account? Sign in <NavLink to="/signin" className="here-link">here!</NavLink></p>
+          <div id="sign-in-failed" className="hidden">
+            <h2>Sign Up Failed</h2>
+            <h4>Ensure your email is valid</h4>
+            <h4>Ensure your password is 6+ characters</h4>
+          </div>
         </form>
       </div>
     );
