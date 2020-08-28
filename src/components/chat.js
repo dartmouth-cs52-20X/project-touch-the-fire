@@ -101,7 +101,7 @@ class Chat extends Component {
           <div id="music-toggle-on">
             <p id="music-off" onClick={this.onMusic}>Music On</p>
           </div>
-          <audio src={backgroundmusic} autoPlay infinite />
+          <audio src={backgroundmusic} autoPlay />
         </div>
       );
     }
