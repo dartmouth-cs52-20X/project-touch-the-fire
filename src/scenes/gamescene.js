@@ -4,8 +4,8 @@ import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import fbase from '../config/fire';
 import money from '../assets/money.png';
-import blueplayer from '../assets/blue_player.png';
-import redplayer from '../assets/red_player.png';
+import blueplayer from '../assets/blue_above3.png';
+import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
@@ -19,6 +19,7 @@ class GameScene extends Scene {
   }
 
   preload() {
+  //  this.load.spritesheet('blueplayer', '../assets/blue_spritesheet.png', 662, 389);
     this.load.image('blueplayer', blueplayer);
     this.load.image('redplayer', redplayer);
     this.load.image('money', money);
@@ -31,6 +32,7 @@ class GameScene extends Scene {
   create() {
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
+    console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -110,7 +112,7 @@ class GameScene extends Scene {
     this.game.input.keyboard.clearCaptures();
     this.fired = false;
     this.input.keyboard.on('keydown_SPACE', () => {
-      if (!this.fired) {
+      if (!this.fired && this.input.isOver) {
         this.fired = !this.fired;
         this.socket.emit('lasershot', {
           laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id, shooter_team: this.ship.team,
@@ -121,7 +123,12 @@ class GameScene extends Scene {
       this.fired = !this.fired;
     });
     this.socket.on('tick', (time) => {
-      this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      try {
+        this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.lasers = [];
@@ -142,13 +149,20 @@ class GameScene extends Scene {
       });
     });
     this.gameendtext = this.add.text((this.game.canvas.width / 2) - 100, this.game.canvas.height / 2, '', { fontSize: '60px', fill: '#FFFF00' }).setScrollFactor(0);
+
     this.socket.on('gameover', (data) => {
       this.gameendtext.setText(`${data.text}`);
     });
 
     this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
+
     this.socket.on('restarttick', (time) => {
-      this.restartin.setText(`New Game Starts In ${time}`);
+      try {
+        this.restartin.setText(`New Game Starts In ${time}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.socket.on('restart', (payload) => {
@@ -200,6 +214,13 @@ class GameScene extends Scene {
     this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.anims.create({
+      //   key: 'move',
+      //   frames: this.anims.generateFrameNumbers('blueplayer', { start: 0, end: 4 }),
+      //   frameRate: 5,
+      //   repeat: -1,
+      // });
     } else {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
@@ -219,10 +240,7 @@ class GameScene extends Scene {
         this.switchstate = 0;
       }
     }
-    // logs the times / durations that you touched the fire, will update this to calculate the length of time
-    // can do calc at the end of the match too maybe?
     const d = new Date();
-    // console.log(`touching fire at ${d.toLocaleTimeString()}.${(`000${d.getMilliseconds()}`).substr(-3)}`);
     this.fireDuration.push(d);
     if (this.fireDuration.length >= this.firescorethreshold + 100) {
       this.firescorethreshold = this.fireDuration.length;
@@ -249,6 +267,10 @@ class GameScene extends Scene {
   }
 
   update() {
+    if (!this.game.isRunning) {
+      this.socket.emit('disconnect', () => { console.log('game ended'); });
+      console.log('disconnect');
+    }
     if (this.ship) {
       if (this.hitstaken >= 3) {
         this.ship.x = 50;
@@ -268,17 +290,17 @@ class GameScene extends Scene {
           player.setAlpha(1);
         }
       });
-      if (this.cursors.J.isDown) {
+      if (this.cursors.J.isDown && this.input.isOver) {
         this.ship.setAngularVelocity(-150);
-      } else if (this.cursors.L.isDown) {
+      } else if (this.cursors.L.isDown && this.input.isOver) {
         this.ship.setAngularVelocity(150);
       } else {
         this.ship.setAngularVelocity(0);
       }
 
-      if (this.cursors.I.isDown) {
+      if (this.cursors.I.isDown && this.input.isOver) {
         this.physics.velocityFromRotation(this.ship.rotation + 1.5, 200, this.ship.body.velocity);
-      } else if (this.cursors.K.isDown) {
+      } else if (this.cursors.K.isDown && this.input.isOver) {
         this.physics.velocityFromRotation(this.ship.rotation - 1.5, 200, this.ship.body.velocity);
       } else {
         this.ship.setAcceleration(0);
@@ -290,21 +312,21 @@ class GameScene extends Scene {
 
       this.physics.overlap(this.ship, this.fire, this.handleCollide, null, this);
 
-      if (this.cursors.A.isDown) {
+      if (this.cursors.A.isDown && this.input.isOver) {
         // this.ship.setAngularVelocity(-150);
         this.ship.setVelocityX(-200);
         this.ship.setRotation(Math.PI / 2);
         // this.cameras.main.shake();
-      } else if (this.cursors.D.isDown) {
+      } else if (this.cursors.D.isDown && this.input.isOver) {
         // this.ship.setAngularVelocity(150);
         this.ship.setVelocityX(200);
         this.ship.setRotation(-Math.PI / 2);
       }
-      if (this.cursors.W.isDown) {
+      if (this.cursors.W.isDown && this.input.isOver) {
         // this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
         this.ship.setVelocityY(-200);
         this.ship.setRotation(Math.PI);
-      } else if (this.cursors.S.isDown) {
+      } else if (this.cursors.S.isDown && this.input.isOver) {
         this.ship.setVelocityY(200);
         this.ship.setRotation();
       }
@@ -320,21 +342,18 @@ class GameScene extends Scene {
           // console.log('both');
           this.ship.x = this.ship.oldPosition.x;
           this.ship.y = this.ship.oldPosition.y;
-          this.cameras.main.shake();
         } else if (x > this.game.canvas.width * MAP_VIEW_MULT || x < 0) {
           // console.log('x cross');
           // console.log(x);
           // console.log(this.game.canvas.width);
           this.socket.emit('playerMovement', { x: this.ship.oldPosition.x, y: this.ship.y, rotation: this.ship.rotation });
           this.ship.x = this.ship.oldPosition.x;
-          this.cameras.main.shake();
         } else if (y > this.game.canvas.height * MAP_VIEW_MULT || y < 0) {
           // console.log('y cross');
           // console.log(y);
           // console.log(this.game.canvas.height);
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.oldPosition.y, rotation: this.ship.rotation });
           this.ship.y = this.ship.oldPosition.y;
-          this.cameras.main.shake();
         } else {
           this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
           // console.log('neither cross');

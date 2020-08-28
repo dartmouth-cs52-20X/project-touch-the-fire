@@ -13,6 +13,10 @@ button:focus {
   outline: none;
 }
 
+.hidden {
+  display: none;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -144,9 +148,9 @@ nav ul {
 // // Styling the chat
 .chat-wrapper {
   margin: 0;
-  padding: 5px;
-  width: 300px;
-  height: 600px;
+  padding: 0;
+  width: 25vw;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -225,8 +229,10 @@ nav ul {
   position: absolute;
   left:80%;
   top: 5%;
-  height:100%;
+  height: 95vh;
   width: 20%;
+  margin: 0;
+  padding: 0;
 }
 
 #lb-entry{
@@ -290,3 +296,13 @@ nav ul {
   justify-content: space-evenly;;
 }
 
+.sign-in-up-fail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba($color: red, $alpha: 0.3);
+  padding: 20px;
+  border-radius: 20px;
+}
