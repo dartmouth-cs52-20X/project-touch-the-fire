@@ -19,7 +19,7 @@ class Game extends Component {
       game: {
         type: Phaser.AUTO,
         width: '80%',
-        height: '100%',
+        height: '95%',
         physics: {
           default: 'arcade',
           arcade: {
