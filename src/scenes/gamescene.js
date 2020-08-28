@@ -4,8 +4,8 @@ import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import fbase from '../config/fire';
 import money from '../assets/money.png';
-import blueplayer from '../assets/blue_player.png';
-import redplayer from '../assets/red_player.png';
+import blueplayer from '../assets/blue_above3.png';
+import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
@@ -19,6 +19,7 @@ class GameScene extends Scene {
   }
 
   preload() {
+  //  this.load.spritesheet('blueplayer', '../assets/blue_spritesheet.png', 662, 389);
     this.load.image('blueplayer', blueplayer);
     this.load.image('redplayer', redplayer);
     this.load.image('money', money);
@@ -31,6 +32,7 @@ class GameScene extends Scene {
   create() {
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
+    console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -121,7 +123,12 @@ class GameScene extends Scene {
       this.fired = !this.fired;
     });
     this.socket.on('tick', (time) => {
-      this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      try {
+        this.countDownText.setText(`${Math.floor(time / 60)}:${Math.floor(time % 60)}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.lasers = [];
@@ -150,7 +157,12 @@ class GameScene extends Scene {
     this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
 
     this.socket.on('restarttick', (time) => {
-      this.restartin.setText(`New Game Starts In ${time}`);
+      try {
+        this.restartin.setText(`New Game Starts In ${time}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
     });
 
     this.socket.on('restart', (payload) => {
@@ -202,6 +214,13 @@ class GameScene extends Scene {
     this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      // this.anims.create({
+      //   key: 'move',
+      //   frames: this.anims.generateFrameNumbers('blueplayer', { start: 0, end: 4 }),
+      //   frameRate: 5,
+      //   repeat: -1,
+      // });
     } else {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
@@ -248,6 +267,10 @@ class GameScene extends Scene {
   }
 
   update() {
+    if (!this.game.isRunning) {
+      this.socket.emit('disconnect', () => { console.log('game ended'); });
+      console.log('disconnect');
+    }
     if (this.ship) {
       if (this.hitstaken >= 3) {
         this.ship.x = 50;
