@@ -9,7 +9,12 @@ import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
+<<<<<<< HEAD
 import shootNoise from '../assets/shoot.mp3';
+=======
+// import icepng from '../assets/fonts/bitmap/iceicebaby.png';
+// import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
+>>>>>>> 8800a5b424eff5a5231ee69ebcf0f8051a35c544
 
 const MAP_VIEW_MULT = 2;
 class GameScene extends Scene {
@@ -27,7 +32,11 @@ class GameScene extends Scene {
     this.load.image('fire', fire);
     this.load.image('green', green);
     this.load.image('keystone', keystone);
+<<<<<<< HEAD
     this.load.audio('pewpew', shootNoise);
+=======
+    // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
+>>>>>>> 8800a5b424eff5a5231ee69ebcf0f8051a35c544
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
@@ -141,7 +150,9 @@ class GameScene extends Scene {
         this.socket.emit('forcedisconnect');
       }
     });
-
+    // eslint-disable-next-line new-cap
+    this.hsv = Phaser.Display.Color.HSVColorWheel();
+    this.i = 0;
     this.lasers = [];
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
@@ -159,13 +170,19 @@ class GameScene extends Scene {
         }
       });
     });
-    this.gameendtext = this.add.text((this.game.canvas.width / 2) - 100, this.game.canvas.height / 2, '', { fontSize: '60px', fill: '#FFFF00' }).setScrollFactor(0);
 
+    // rainbow text inspiration from  https://phaser.io/examples/v3/view/display/tint/rainbow-text
+    this.gameendtext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('gameover', (data) => {
       this.gameendtext.setText(`${data.text}`);
+      this.gameendtext.setStroke('#00f', 16);
+      this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
+      // this.add.dynamicBitmapText(200, 300, 'ice', 'Game Over', 128).setScrollFactor(0);
     });
 
-    this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
+    this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
+    this.restartin.setStroke('#fff', 16);
+    // this.restartin.setShadown(2, 2, '#333333', 2, true, true);
 
     this.socket.on('restarttick', (time) => {
       try {
@@ -377,6 +394,17 @@ class GameScene extends Scene {
         y: this.ship.y,
         rotation: this.ship.rotation,
       };
+    }
+    const top = this.hsv[this.i].color;
+    const bottom = this.hsv[359 - this.i].color;
+
+    this.gameendtext.setTint(top, top, bottom, bottom);
+    this.gameendtext.setTint(top, bottom, top, bottom);
+
+    this.i += 1;
+
+    if (this.i === 360) {
+      this.i = 0;
     }
   }
 }
