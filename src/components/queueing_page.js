@@ -6,6 +6,9 @@ import socket from '../config/socket';
 import fbase from '../config/fire';
 
 class QueueingPage extends Component {
+  // https://stackoverflow.com/questions/53949393/cant-perform-a-react-state-update-on-an-unmounted-component
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -18,8 +21,11 @@ class QueueingPage extends Component {
 
   // Adding event listeners
   componentDidMount() {
+    this._isMounted = true;
     socket.on('current game size', (length) => {
-      this.setState({ current_game_size: length });
+      if (this._isMounted) {
+        this.setState({ current_game_size: length });
+      }
     });
     // To set the username in the Redux store if the user refreshes the page
     this.handleAuthChange();
@@ -27,6 +33,7 @@ class QueueingPage extends Component {
 
   // If you leave the queue page, want to be removed from the queue
   componentWillUnmount() {
+    this._isMounted = false;
     socket.emit('remove me from the queue');
   }
 
