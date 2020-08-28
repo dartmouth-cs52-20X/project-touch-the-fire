@@ -26,10 +26,14 @@ class SignIn extends Component {
       console.log(u);
       // Store the newly signed-in user's username in the Redux store
       this.props.signIn(u.user.displayName);
+      document.getElementById('sign-in-failed').classList.add('hidden');
+      document.getElementById('sign-in-failed').classList.remove('sign-in-up-fail');
+      this.props.history.push('/');
     }).catch((err) => {
       console.log(err);
+      document.getElementById('sign-in-failed').classList.remove('hidden');
+      document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
     });
-    this.props.history.push('/');
   }
 
   render() {
@@ -41,6 +45,10 @@ class SignIn extends Component {
           <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
           <NavLink to="/"><button type="button" onClick={this.handleSignInPress} className="button-var1">Sign In</button></NavLink>
           <p>New to Touch the Fire? Create an account <NavLink to="/signup" className="here-link">here!</NavLink></p>
+          <div id="sign-in-failed" className="hidden">
+            <h2>Sign In Failed</h2>
+            <h4>Please check your email and password</h4>
+          </div>
         </form>
       </div>
     );
