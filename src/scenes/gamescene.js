@@ -325,7 +325,7 @@ class GameScene extends Scene {
       }
     });
 
-    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '38px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.notenoughmoney = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.boughtbulletdamagebool = false;
     this.boughthealthboostbool = false;
