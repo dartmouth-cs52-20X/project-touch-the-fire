@@ -260,8 +260,8 @@ class GameScene extends Scene {
     this.dbamultiplier = 1;
     this.health = this.yourhealth;
     this.dba = 0;
-    this.healthtext = this.add.text(16, 40, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
-    this.dbatext = this.add.text(16, 60, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.healthtext = this.add.text(16, this.game.canvas.height * 0.9, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
+    this.dbatext = this.add.text(16, this.game.canvas.height * 0.95, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
     this.healthtext.setText(`Health:${this.health}`);
     this.dbatext.setText(`DBA:${this.dba}`);
     this.lastlasertohit = Date.now();
