@@ -46,6 +46,7 @@ class GameScene extends Scene {
     this.socket = io('localhost:9090');
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.socket.emit('isgame', { x: 1 });
     this.minimap = this.cameras.add(320, 0, 200, 200).setZoom(0.1).setName('mini');
     this.minimap.setBackgroundColor('black');
     // eslint-disable-next-line max-len
@@ -114,6 +115,8 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.star, () => {
         this.pickupsound.play();
         this.socket.emit('starCollected');
+        this.dba += 10;
+        this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
 
@@ -123,6 +126,10 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.keystone, () => {
         this.pickupsound.play();
         this.socket.emit('keystoneCollected');
+        if (this.health < 100) {
+          this.health += 35;
+          this.healthtext.setText(`Health:${this.health}`);
+        }
       });
     });
     this.bulletdamage = 35;
