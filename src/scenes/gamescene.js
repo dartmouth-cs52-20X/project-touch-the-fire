@@ -9,6 +9,7 @@ import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
+
 import shootNoise from '../assets/shoot.mp3';
 // import icepng from '../assets/fonts/bitmap/iceicebaby.png';
 // import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
@@ -29,6 +30,7 @@ class GameScene extends Scene {
     this.load.image('fire', fire);
     this.load.image('green', green);
     this.load.image('keystone', keystone);
+
     this.load.audio('pewpew', shootNoise);
     // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
   }
@@ -56,10 +58,11 @@ class GameScene extends Scene {
 
     this.otherPlayers = this.physics.add.group();
     fbase.auth().onAuthStateChanged((user) => {
-      let username = user.displayName;
-      if (username === null) { username = 'decheftw'; }
+      let { email } = user;
+      const username = user.displayName;
+      if (username === null) { email = 'devonc2000@gmail.com'; }
       console.log(username);
-      this.socket.emit('username', username);
+      this.socket.emit('username', [username, email]);
     });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);

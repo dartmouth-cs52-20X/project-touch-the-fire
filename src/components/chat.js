@@ -85,7 +85,7 @@ class Chat extends Component {
           <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
           <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
           <div id="music-toggle-off">
-            <p id="music-off" onClick={this.onMusic}>Music Off</p>
+            <i className="fas fa-volume-mute" onClick={this.onMusic} role="button" tabIndex={0} aria-label="submit" />
           </div>
 
           {/* <embed src={soundfile} autostart="true" loop="true" /> */}
@@ -97,7 +97,7 @@ class Chat extends Component {
           <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
           <i className="far fa-paper-plane" onClick={this.onSubmitClick} role="button" tabIndex={0} aria-label="submit" />
           <div id="music-toggle-on">
-            <p id="music-off" onClick={this.onMusic}>Music On</p>
+            <i className="fas fa-volume-up" onClick={this.onMusic} role="button" tabIndex={0} aria-label="submit" />
           </div>
           <audio src={backgroundmusic} autoPlay />
         </div>
