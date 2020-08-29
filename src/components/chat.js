@@ -79,7 +79,7 @@ class Chat extends Component {
   // Want the input box to send message on enter
   // Also have a button that sends message on click
   renderMessageInputBox() {
-    if (this.state.music) {
+    if (!this.state.music) {
       return (
         <div className="message-input-wrapper">
           <input type="text" placeholder="message" onChange={this.onMessageChange} onKeyPress={this.onEnterPress} value={this.state.message} />
@@ -99,7 +99,7 @@ class Chat extends Component {
           <div id="music-toggle-on">
             <i className="fas fa-volume-up" onClick={this.onMusic} role="button" tabIndex={0} aria-label="submit" />
           </div>
-          <audio src={backgroundmusic} autoPlay />
+          <audio src={backgroundmusic} autoPlay loop />
         </div>
       );
     }

@@ -273,9 +273,15 @@ class GameScene extends Scene {
       this.yourhealth = 100;
       this.dbamultiplier = 1;
       this.boughtbulletdamagebool = false;
+      this.bought1booltest = false;
+      this.bought2booltest = false;
+      this.bought3booltest = false;
+      this.bought4booltest = false;
+
       this.boughthealthboostbool = false;
       this.boughtdbaboostbool = false;
       this.boughtcameraheight = false;
+
       this.minimap.setZoom(0.1);
       try {
         this.healthtext.setText(`Health:${this.health}`);
@@ -420,13 +426,61 @@ class GameScene extends Scene {
     if (this.ship) {
       this.boughttext.setText('');
       this.notenoughmoney.setText('');
-      if ((this.cursors.ONE.isDown && this.dba >= 50) || this.boughtbulletdamagebool) {
+
+      // This chunk of code is to bypass update refresh rate to enable bought/already bought center texts
+      if (this.cursors.ONE.isUp) {
+        this.bought1booltest = false;
+      }
+      if (this.cursors.TWO.isUp) {
+        this.bought2booltest = false;
+      }
+      if (this.cursors.THREE.isUp) {
+        this.bought3booltest = false;
+      }
+      if (this.cursors.FOUR.isUp) {
+        this.bought4booltest = false;
+      }
+
+      if (this.cursors.ONE.isDown && this.boughtbulletdamagebool) {
+        if (!this.bought1booltest) {
+          this.boughttext.setText('Already purchased Extra Bullet Damage');
+        } else {
+          this.boughttext.setText('Bought Extra Bullet Damage');
+        }
+      }
+
+      if (this.cursors.TWO.isDown && this.boughthealthboostbool) {
+        if (!this.bought2booltest) {
+          this.boughttext.setText('Already purchased Increased Health');
+        } else {
+          this.boughttext.setText('Bought Increased Health');
+        }
+      }
+
+      if (this.cursors.THREE.isDown && this.boughtdbaboostbool) {
+        if (!this.bought3booltest) {
+          this.boughttext.setText('Already purchased Extra DBA Per Hit');
+        } else {
+          this.boughttext.setText('Bought Extra DBA Per Hit');
+        }
+      }
+
+      if (this.cursors.FOUR.isDown && this.boughtcameraheight) {
+        if (!this.bought4booltest) {
+          this.boughttext.setText('Already purchased Expanded Minimap');
+        } else {
+          this.boughttext.setText('Bought Expanded Minimap');
+        }
+      }
+
+      if ((this.cursors.ONE.isDown && this.dba >= 50) && !this.boughtbulletdamagebool) {
         this.bulletdamage = 50;
         if (this.cursors.ONE.isDown) {
-          this.boughttext.setText('Bought bullet damage');
+          this.boughttext.setText('Bought Extra Bullet Damage');
         }
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
+          this.bought1booltest = true;
           this.dba -= 50;
           console.log(this.dba);
           this.dbatext.setText(`DBA:${this.dba}`);
@@ -434,13 +488,14 @@ class GameScene extends Scene {
       } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.TWO.isDown && this.dba >= 50) || this.boughthealthboostbool) {
+      if ((this.cursors.TWO.isDown && this.dba >= 50) && !this.boughthealthboostbool) {
         this.yourhealth = 125;
         if (this.cursors.TWO.isDown) {
-          this.boughttext.setText('Bought more health');
+          this.boughttext.setText('Bought Increased Health');
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
+          this.bought2booltest = true;
           this.dba -= 50;
           this.health = this.yourhealth;
           this.dbatext.setText(`DBA:${this.dba}`);
@@ -449,26 +504,29 @@ class GameScene extends Scene {
       } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.THREE.isDown && this.dba >= 75) || this.boughtdbaboostbool) {
+      if ((this.cursors.THREE.isDown && this.dba >= 75) && !this.boughtdbaboostbool) {
         this.dbamultiplier = 2;
         if (this.cursors.THREE.isDown) {
-          this.boughttext.setText('More DBA per hit');
+          this.boughttext.setText('Bought Extra DBA Per Hit');
         }
         if (this.boughtdbaboostbool === false) {
           this.boughtdbaboostbool = true;
+          this.bought3booltest = true;
+
           this.dba -= 75;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.FOUR.isDown && this.dba >= 100) || this.boughtcameraheight) {
+      if ((this.cursors.FOUR.isDown && this.dba >= 100) && !this.boughtcameraheight) {
         this.minimap.setZoom(0.08);
         if (this.cursors.FOUR.isDown) {
-          this.boughttext.setText('Bought Increased Minimap');
+          this.boughttext.setText('Bought Expanded Minimap');
         }
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
+          this.bought4booltest = true;
           this.dba -= 100;
           this.dbatext.setText(`DBA:${this.dba}`);
         }

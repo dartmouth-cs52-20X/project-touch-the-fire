@@ -32,6 +32,7 @@ class Instructions extends Component {
         </div>
         <div><h2>Advanced Controls</h2></div>
         <div className="controls-list">
+          <div>Mute In Game Sound: M</div>
           <div>Rotate Left: J</div>
           <div>Rotate Right: L</div>
           <div>Forward: I</div>
