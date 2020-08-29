@@ -57,11 +57,13 @@ class GameScene extends Scene {
     // this.music.play(musicConfig);
 
     this.otherPlayers = this.physics.add.group();
+    this.emailtosend = 'test@test.com';
     fbase.auth().onAuthStateChanged((user) => {
       let { email } = user;
       const username = user.displayName;
       if (username === null) { email = 'devonc2000@gmail.com'; }
       console.log(username);
+      this.emailtosend = email;
       this.socket.emit('username', [username, email]);
     });
     this.socket.on('currentPlayers', (players) => {
@@ -129,10 +131,12 @@ class GameScene extends Scene {
     this.firescorethreshold = 0;
     this.game.input.keyboard.clearCaptures();
     this.fired = false;
+    this.bulletsfired = 0;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired && this.input.isOver) {
         this.fired = !this.fired;
         this.shootingNoise.play();
+        this.bulletsfired += 1;
         this.socket.emit('lasershot', {
           laserId: Date.now(),
           initial_x: this.ship.x,
@@ -182,10 +186,25 @@ class GameScene extends Scene {
     // rainbow text inspiration from  https://phaser.io/examples/v3/view/display/tint/rainbow-text
     this.gameendtext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('gameover', (data) => {
-      this.gameendtext.setText(`${data.text}`);
-      this.gameendtext.setStroke('#00f', 16);
-      this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
-      // this.add.dynamicBitmapText(200, 300, 'ice', 'Game Over', 128).setScrollFactor(0);
+      try {
+        this.gameendtext.setText(`${data.text}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setStroke('#00f', 16);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      this.socket.emit('leaderboarddata', { winner: data.winner, bulletsfired: this.bulletsfired, dba: this.dba });
     });
 
     this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
@@ -208,6 +227,7 @@ class GameScene extends Scene {
       this.ship.y = 50;
       this.health = 100;
       this.dba = 0;
+      this.bulletsfired = 0;
       this.bulletdamage = 35;
       this.yourhealth = 100;
       this.dbamultiplier = 1;
@@ -216,7 +236,12 @@ class GameScene extends Scene {
       this.boughtdbaboostbool = false;
       this.boughtcameraheight = false;
       this.minimap.setZoom(0.1);
-      this.healthtext.setText(`Health:${this.health}`);
+      try {
+        this.healthtext.setText(`Health:${this.health}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
       this.dbatext.setText(`DBA:${this.dba}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
