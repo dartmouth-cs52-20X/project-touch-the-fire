@@ -14,6 +14,7 @@ import laserBlue from '../assets/laserBlue.png';
 
 import shootNoise from '../assets/beam.mp3';
 import pickupsound from '../assets/pickup.mp3';
+import hitmarker from '../assets/hitmarker.mp3';
 // import icepng from '../assets/fonts/bitmap/iceicebaby.png';
 // import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
 
@@ -37,6 +38,7 @@ class GameScene extends Scene {
     this.load.image('laserBlue', laserBlue);
     this.load.audio('pickup', pickupsound);
     this.load.audio('pewpew', shootNoise);
+    this.load.audio('hitmarker', hitmarker);
     // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
   }
 
@@ -47,7 +49,7 @@ class GameScene extends Scene {
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.socket.emit('isgame', { x: 1 });
-    this.minimap = this.cameras.add(320, 0, 200, 200).setZoom(0.1).setName('mini');
+    this.minimap = this.cameras.add(0, 0, 150, 150).setZoom(0.1).setName('mini');
     this.minimap.setBackgroundColor('black');
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -57,8 +59,10 @@ class GameScene extends Scene {
     this.lasercolor = 'laserRed';
     this.shootingNoise = this.sound.add('pewpew');
     this.pickupsound = this.sound.add('pickup');
+    this.hitmarkersound = this.sound.add('hitmarker');
     this.otherPlayers = this.physics.add.group();
     this.emailtosend = 'test@test.com';
+    this.nametag = '';
     fbase.auth().onAuthStateChanged((user) => {
       let { email } = user;
       const username = user.displayName;
@@ -90,7 +94,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR') };
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR,M') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -100,7 +104,7 @@ class GameScene extends Scene {
         }
       });
     });
-    this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.blueScoreText = this.add.text(170, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
     this.countDownText = this.add.text(this.game.canvas.width * 0.5, 16, '', { fontSize: '32px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
     this.redScoreText = this.add.text(this.game.canvas.width * 0.8, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
 
@@ -120,12 +124,39 @@ class GameScene extends Scene {
       });
     });
 
+    this.socket.on('starLocationtwo', (starLocation) => {
+      if (this.startwo) this.startwo.destroy();
+      this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.startwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('starCollectedtwo');
+        this.dba += 10;
+        this.dbatext.setText(`DBA:${this.dba}`);
+      });
+    });
+
     this.socket.on('keystoneLocation', (keystoneLocation) => {
       if (this.keystone) this.keystone.destroy();
       this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.keystone, () => {
         this.pickupsound.play();
         this.socket.emit('keystoneCollected');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
+        if (this.health < 100) {
+          this.health += 35;
+          this.healthtext.setText(`Health:${this.health}`);
+        }
+      });
+    });
+    this.socket.on('keystoneLocationtwo', (keystoneLocation) => {
+      if (this.keystonetwo) this.keystonetwo.destroy();
+      this.keystonetwo = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.keystonetwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('keystoneCollectedtwo');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
         if (this.health < 100) {
           this.health += 35;
           this.healthtext.setText(`Health:${this.health}`);
@@ -242,9 +273,15 @@ class GameScene extends Scene {
       this.yourhealth = 100;
       this.dbamultiplier = 1;
       this.boughtbulletdamagebool = false;
+      this.bought1booltest = false;
+      this.bought2booltest = false;
+      this.bought3booltest = false;
+      this.bought4booltest = false;
+
       this.boughthealthboostbool = false;
       this.boughtdbaboostbool = false;
       this.boughtcameraheight = false;
+
       this.minimap.setZoom(0.1);
       try {
         this.healthtext.setText(`Health:${this.health}`);
@@ -260,8 +297,8 @@ class GameScene extends Scene {
     this.dbamultiplier = 1;
     this.health = this.yourhealth;
     this.dba = 0;
-    this.healthtext = this.add.text(16, 40, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
-    this.dbatext = this.add.text(16, 60, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.healthtext = this.add.text(16, this.game.canvas.height * 0.9, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
+    this.dbatext = this.add.text(16, this.game.canvas.height * 0.95, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
     this.healthtext.setText(`Health:${this.health}`);
     this.dbatext.setText(`DBA:${this.dba}`);
     this.lastlasertohit = Date.now();
@@ -279,6 +316,7 @@ class GameScene extends Scene {
         this.otherPlayers.getChildren().forEach((player) => {
           if (this.lastlasertohit !== info.laserId && player.playerId === info.playerId && player.team !== this.ship.team) {
             player.setAlpha(0.3);
+            this.hitmarkersound.play();
             this.dba += 5 * this.dbamultiplier;
             this.dbatext.setText(`DBA:${this.dba}`);
             this.lastlasertohit = info.laserId;
@@ -287,13 +325,13 @@ class GameScene extends Scene {
       }
     });
 
-    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '38px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.notenoughmoney = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.boughtbulletdamagebool = false;
     this.boughthealthboostbool = false;
     this.boughtdbaboostbool = false;
     this.boughtcameraheight = false;
-    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '40px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '35px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('kicked', () => {
       this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
     });
@@ -379,31 +417,86 @@ class GameScene extends Scene {
       this.socket.emit('disconnect', () => { console.log('game ended'); });
       console.log('disconnect');
     }
+    if (this.cursors.M.isDown && this.toggle === true && this.input.isOver) {
+      this.toggle = false;
+      this.game.sound.mute = !this.game.sound.mute;
+    } else if (this.cursors.M.isUp && this.input.isOver) {
+      this.toggle = true;
+    }
     if (this.ship) {
       this.boughttext.setText('');
       this.notenoughmoney.setText('');
-      if ((this.cursors.ONE.isDown && this.dba >= 50) || this.boughtbulletdamagebool) {
+
+      // This chunk of code is to bypass update refresh rate to enable bought/already bought center texts
+      if (this.cursors.ONE.isUp) {
+        this.bought1booltest = false;
+      }
+      if (this.cursors.TWO.isUp) {
+        this.bought2booltest = false;
+      }
+      if (this.cursors.THREE.isUp) {
+        this.bought3booltest = false;
+      }
+      if (this.cursors.FOUR.isUp) {
+        this.bought4booltest = false;
+      }
+
+      if (this.cursors.ONE.isDown && this.boughtbulletdamagebool) {
+        if (!this.bought1booltest) {
+          this.boughttext.setText('Already purchased Extra Bullet Damage');
+        } else {
+          this.boughttext.setText('Bought Extra Bullet Damage');
+        }
+      }
+
+      if (this.cursors.TWO.isDown && this.boughthealthboostbool) {
+        if (!this.bought2booltest) {
+          this.boughttext.setText('Already purchased Increased Health');
+        } else {
+          this.boughttext.setText('Bought Increased Health');
+        }
+      }
+
+      if (this.cursors.THREE.isDown && this.boughtdbaboostbool) {
+        if (!this.bought3booltest) {
+          this.boughttext.setText('Already purchased Extra DBA Per Hit');
+        } else {
+          this.boughttext.setText('Bought Extra DBA Per Hit');
+        }
+      }
+
+      if (this.cursors.FOUR.isDown && this.boughtcameraheight) {
+        if (!this.bought4booltest) {
+          this.boughttext.setText('Already purchased Expanded Minimap');
+        } else {
+          this.boughttext.setText('Bought Expanded Minimap');
+        }
+      }
+
+      if ((this.cursors.ONE.isDown && this.dba >= 50) && !this.boughtbulletdamagebool) {
         this.bulletdamage = 50;
         if (this.cursors.ONE.isDown) {
-          this.boughttext.setText('Bought increased bullet damage');
+          this.boughttext.setText('Bought Extra Bullet Damage');
         }
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
-          this.dba -= 10;
+          this.bought1booltest = true;
+          this.dba -= 50;
           console.log(this.dba);
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.TWO.isDown && this.dba >= 50) || this.boughthealthboostbool) {
+      if ((this.cursors.TWO.isDown && this.dba >= 50) && !this.boughthealthboostbool) {
         this.yourhealth = 125;
         if (this.cursors.TWO.isDown) {
-          this.boughttext.setText('Bought increased health');
+          this.boughttext.setText('Bought Increased Health');
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
-          this.dba -= 10;
+          this.bought2booltest = true;
+          this.dba -= 50;
           this.health = this.yourhealth;
           this.dbatext.setText(`DBA:${this.dba}`);
           this.healthtext.setText(`Health:${this.health}`);
@@ -411,27 +504,30 @@ class GameScene extends Scene {
       } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.THREE.isDown && this.dba >= 75) || this.boughtdbaboostbool) {
+      if ((this.cursors.THREE.isDown && this.dba >= 75) && !this.boughtdbaboostbool) {
         this.dbamultiplier = 2;
         if (this.cursors.THREE.isDown) {
-          this.boughttext.setText('Bought increased increased dba per hit');
+          this.boughttext.setText('Bought Extra DBA Per Hit');
         }
         if (this.boughtdbaboostbool === false) {
           this.boughtdbaboostbool = true;
-          this.dba -= 10;
+          this.bought3booltest = true;
+
+          this.dba -= 75;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.FOUR.isDown && this.dba >= 100) || this.boughtcameraheight) {
+      if ((this.cursors.FOUR.isDown && this.dba >= 100) && !this.boughtcameraheight) {
         this.minimap.setZoom(0.08);
         if (this.cursors.FOUR.isDown) {
-          this.boughttext.setText('Bought increased minimap');
+          this.boughttext.setText('Bought Expanded Minimap');
         }
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
-          this.dba -= 10;
+          this.bought4booltest = true;
+          this.dba -= 100;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
