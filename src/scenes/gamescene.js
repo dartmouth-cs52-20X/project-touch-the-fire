@@ -389,7 +389,7 @@ class GameScene extends Scene {
         }
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
-          this.dba -= 10;
+          this.dba -= 50;
           console.log(this.dba);
           this.dbatext.setText(`DBA:${this.dba}`);
         }
@@ -403,7 +403,7 @@ class GameScene extends Scene {
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
-          this.dba -= 10;
+          this.dba -= 50;
           this.health = this.yourhealth;
           this.dbatext.setText(`DBA:${this.dba}`);
           this.healthtext.setText(`Health:${this.health}`);
@@ -418,7 +418,7 @@ class GameScene extends Scene {
         }
         if (this.boughtdbaboostbool === false) {
           this.boughtdbaboostbool = true;
-          this.dba -= 10;
+          this.dba -= 75;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
@@ -431,7 +431,7 @@ class GameScene extends Scene {
         }
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
-          this.dba -= 10;
+          this.dba -= 100;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
       } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
