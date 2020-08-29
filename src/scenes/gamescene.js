@@ -283,6 +283,10 @@ class GameScene extends Scene {
     this.boughthealthboostbool = false;
     this.boughtdbaboostbool = false;
     this.boughtcameraheight = false;
+    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '40px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.socket.on('kicked', () => {
+      this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
+    });
   }
 
   addOtherPlayers = (playerInfo) => {
