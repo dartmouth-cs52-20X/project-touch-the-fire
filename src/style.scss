@@ -295,6 +295,16 @@ nav ul {
   padding: 2vw 0 2vw 0;
 }
 
+#lb_buttons {
+  border-color: black;
+  border-style: solid;
+  background-color: cadetblue;
+}
+
+#lb_buttons:hover{
+  background-color: dodgerblue;
+}
+
 #lb-title {
   font-size: 175%;
   margin: 0 0 2vw 0;

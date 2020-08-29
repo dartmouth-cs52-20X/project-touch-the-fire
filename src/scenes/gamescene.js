@@ -42,6 +42,17 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
+    let email, username;
+    const user = fbase.auth().currentUser;
+    email = user.email;
+    username = user.displayName;
+    console.log(email, username);
+    if (username === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
+    console.log(username);
+    this.emailtosend = email;
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
     console.log(this.socket);
@@ -59,14 +70,6 @@ class GameScene extends Scene {
     this.pickupsound = this.sound.add('pickup');
     this.otherPlayers = this.physics.add.group();
     this.emailtosend = 'test@test.com';
-    fbase.auth().onAuthStateChanged((user) => {
-      let { email } = user;
-      const username = user.displayName;
-      if (username === null) { email = 'devonc2000@gmail.com'; }
-      console.log(username);
-      this.emailtosend = email;
-      this.socket.emit('username', [username, email]);
-    });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
       Object.keys(players).forEach((id) => {
@@ -214,7 +217,15 @@ class GameScene extends Scene {
         console.log('errorcatchactivated');
         this.socket.emit('forcedisconnect');
       }
-      this.socket.emit('leaderboarddata', { winner: data.winner, bulletsfired: this.bulletsfired, dba: this.dba });
+      let win = 1;
+      // eslint-disable-next-line eqeqeq
+      if (this.ship.team.localeCompare(data.winner) == 0) {
+        win = 1;
+      } else { win = 0; }
+      console.log(email, username);
+      this.socket.emit('leaderboarddata', {
+        user: username, em: email, winner: win, bulletsfired: this.bulletsfired, dba: this.dba,
+      });
     });
 
     this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
