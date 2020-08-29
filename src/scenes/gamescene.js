@@ -14,6 +14,7 @@ import laserBlue from '../assets/laserBlue.png';
 
 import shootNoise from '../assets/beam.mp3';
 import pickupsound from '../assets/pickup.mp3';
+import hitmarker from '../assets/hitmarker.mp3';
 // import icepng from '../assets/fonts/bitmap/iceicebaby.png';
 // import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
 
@@ -37,6 +38,7 @@ class GameScene extends Scene {
     this.load.image('laserBlue', laserBlue);
     this.load.audio('pickup', pickupsound);
     this.load.audio('pewpew', shootNoise);
+    this.load.audio('hitmarker', hitmarker);
     // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
   }
 
@@ -47,7 +49,7 @@ class GameScene extends Scene {
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.socket.emit('isgame', { x: 1 });
-    this.minimap = this.cameras.add(320, 0, 200, 200).setZoom(0.1).setName('mini');
+    this.minimap = this.cameras.add(0, 0, 150, 150).setZoom(0.1).setName('mini');
     this.minimap.setBackgroundColor('black');
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
@@ -57,8 +59,10 @@ class GameScene extends Scene {
     this.lasercolor = 'laserRed';
     this.shootingNoise = this.sound.add('pewpew');
     this.pickupsound = this.sound.add('pickup');
+    this.hitmarkersound = this.sound.add('hitmarker');
     this.otherPlayers = this.physics.add.group();
     this.emailtosend = 'test@test.com';
+    this.nametag = '';
     fbase.auth().onAuthStateChanged((user) => {
       let { email } = user;
       const username = user.displayName;
@@ -90,7 +94,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR') };
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR,M') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -100,7 +104,7 @@ class GameScene extends Scene {
         }
       });
     });
-    this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.blueScoreText = this.add.text(170, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
     this.countDownText = this.add.text(this.game.canvas.width * 0.5, 16, '', { fontSize: '32px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
     this.redScoreText = this.add.text(this.game.canvas.width * 0.8, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
 
@@ -120,12 +124,39 @@ class GameScene extends Scene {
       });
     });
 
+    this.socket.on('starLocationtwo', (starLocation) => {
+      if (this.startwo) this.startwo.destroy();
+      this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.startwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('starCollectedtwo');
+        this.dba += 10;
+        this.dbatext.setText(`DBA:${this.dba}`);
+      });
+    });
+
     this.socket.on('keystoneLocation', (keystoneLocation) => {
       if (this.keystone) this.keystone.destroy();
       this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.keystone, () => {
         this.pickupsound.play();
         this.socket.emit('keystoneCollected');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
+        if (this.health < 100) {
+          this.health += 35;
+          this.healthtext.setText(`Health:${this.health}`);
+        }
+      });
+    });
+    this.socket.on('keystoneLocationtwo', (keystoneLocation) => {
+      if (this.keystonetwo) this.keystonetwo.destroy();
+      this.keystonetwo = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.keystonetwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('keystoneCollectedtwo');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
         if (this.health < 100) {
           this.health += 35;
           this.healthtext.setText(`Health:${this.health}`);
@@ -279,6 +310,7 @@ class GameScene extends Scene {
         this.otherPlayers.getChildren().forEach((player) => {
           if (this.lastlasertohit !== info.laserId && player.playerId === info.playerId && player.team !== this.ship.team) {
             player.setAlpha(0.3);
+            this.hitmarkersound.play();
             this.dba += 5 * this.dbamultiplier;
             this.dbatext.setText(`DBA:${this.dba}`);
             this.lastlasertohit = info.laserId;
@@ -293,7 +325,7 @@ class GameScene extends Scene {
     this.boughthealthboostbool = false;
     this.boughtdbaboostbool = false;
     this.boughtcameraheight = false;
-    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '40px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '35px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('kicked', () => {
       this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
     });
@@ -379,13 +411,19 @@ class GameScene extends Scene {
       this.socket.emit('disconnect', () => { console.log('game ended'); });
       console.log('disconnect');
     }
+    if (this.cursors.M.isDown && this.toggle === true && this.input.isOver) {
+      this.toggle = false;
+      this.game.sound.mute = !this.game.sound.mute;
+    } else if (this.cursors.M.isUp && this.input.isOver) {
+      this.toggle = true;
+    }
     if (this.ship) {
       this.boughttext.setText('');
       this.notenoughmoney.setText('');
       if ((this.cursors.ONE.isDown && this.dba >= 50) || this.boughtbulletdamagebool) {
         this.bulletdamage = 50;
         if (this.cursors.ONE.isDown) {
-          this.boughttext.setText('Bought increased bullet damage');
+          this.boughttext.setText('Bought bullet damage');
         }
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
@@ -399,7 +437,7 @@ class GameScene extends Scene {
       if ((this.cursors.TWO.isDown && this.dba >= 50) || this.boughthealthboostbool) {
         this.yourhealth = 125;
         if (this.cursors.TWO.isDown) {
-          this.boughttext.setText('Bought increased health');
+          this.boughttext.setText('Bought more health');
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
@@ -414,7 +452,7 @@ class GameScene extends Scene {
       if ((this.cursors.THREE.isDown && this.dba >= 75) || this.boughtdbaboostbool) {
         this.dbamultiplier = 2;
         if (this.cursors.THREE.isDown) {
-          this.boughttext.setText('Bought increased increased dba per hit');
+          this.boughttext.setText('More DBA per hit');
         }
         if (this.boughtdbaboostbool === false) {
           this.boughtdbaboostbool = true;
@@ -427,7 +465,7 @@ class GameScene extends Scene {
       if ((this.cursors.FOUR.isDown && this.dba >= 100) || this.boughtcameraheight) {
         this.minimap.setZoom(0.08);
         if (this.cursors.FOUR.isDown) {
-          this.boughttext.setText('Bought increased minimap');
+          this.boughttext.setText('Bought Increased Minimap');
         }
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
