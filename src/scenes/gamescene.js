@@ -9,7 +9,11 @@ import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
-import shootNoise from '../assets/shoot.mp3';
+import laserRed from '../assets/laserRed.png';
+import laserBlue from '../assets/laserBlue.png';
+
+import shootNoise from '../assets/beam.mp3';
+import pickupsound from '../assets/pickup.mp3';
 // import icepng from '../assets/fonts/bitmap/iceicebaby.png';
 // import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
 
@@ -29,6 +33,9 @@ class GameScene extends Scene {
     this.load.image('fire', fire);
     this.load.image('green', green);
     this.load.image('keystone', keystone);
+    this.load.image('laserRed', laserRed);
+    this.load.image('laserBlue', laserBlue);
+    this.load.audio('pickup', pickupsound);
     this.load.audio('pewpew', shootNoise);
     // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
   }
@@ -46,20 +53,18 @@ class GameScene extends Scene {
     this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 20, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
 
+    this.lasercolor = 'laserRed';
     this.shootingNoise = this.sound.add('pewpew');
-    // const musicConfig = {
-    //   mute: false,
-    //   volume: 1,
-    // };
-
-    // this.music.play(musicConfig);
-
+    this.pickupsound = this.sound.add('pickup');
     this.otherPlayers = this.physics.add.group();
+    this.emailtosend = 'test@test.com';
     fbase.auth().onAuthStateChanged((user) => {
-      let username = user.displayName;
-      if (username === null) { username = 'decheftw'; }
+      let { email } = user;
+      const username = user.displayName;
+      if (username === null) { email = 'devonc2000@gmail.com'; }
       console.log(username);
-      this.socket.emit('username', username);
+      this.emailtosend = email;
+      this.socket.emit('username', [username, email]);
     });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
@@ -107,7 +112,7 @@ class GameScene extends Scene {
       if (this.star) this.star.destroy();
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
-        console.log('pew');
+        this.pickupsound.play();
         this.socket.emit('starCollected');
       });
     });
@@ -116,6 +121,7 @@ class GameScene extends Scene {
       if (this.keystone) this.keystone.destroy();
       this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.keystone, () => {
+        this.pickupsound.play();
         this.socket.emit('keystoneCollected');
       });
     });
@@ -126,10 +132,12 @@ class GameScene extends Scene {
     this.firescorethreshold = 0;
     this.game.input.keyboard.clearCaptures();
     this.fired = false;
+    this.bulletsfired = 0;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired && this.input.isOver) {
         this.fired = !this.fired;
         this.shootingNoise.play();
+        this.bulletsfired += 1;
         this.socket.emit('lasershot', {
           laserId: Date.now(),
           initial_x: this.ship.x,
@@ -161,8 +169,10 @@ class GameScene extends Scene {
     this.lasers = [];
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
-        if (this.lasers[index] === undefined) {
-          this.lasers[index] = this.add.sprite(item.x, item.y, 'money').setDisplaySize(20, 10);
+        if (this.lasers[index] === undefined && item.shooter_team === 'red') {
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'laserRed').setDisplaySize(20, 10);
+        } else if (this.lasers[index] === undefined && item.shooter_team === 'blue') {
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'laserBlue').setDisplaySize(20, 10);
         } else {
           this.lasers[index].x = item.x;
           this.lasers[index].y = item.y;
@@ -179,10 +189,25 @@ class GameScene extends Scene {
     // rainbow text inspiration from  https://phaser.io/examples/v3/view/display/tint/rainbow-text
     this.gameendtext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('gameover', (data) => {
-      this.gameendtext.setText(`${data.text}`);
-      this.gameendtext.setStroke('#00f', 16);
-      this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
-      // this.add.dynamicBitmapText(200, 300, 'ice', 'Game Over', 128).setScrollFactor(0);
+      try {
+        this.gameendtext.setText(`${data.text}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setStroke('#00f', 16);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      this.socket.emit('leaderboarddata', { winner: data.winner, bulletsfired: this.bulletsfired, dba: this.dba });
     });
 
     this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
@@ -201,10 +226,11 @@ class GameScene extends Scene {
     this.socket.on('restart', (payload) => {
       this.gameendtext.setText('');
       this.restartin.setText('');
-      this.ship.x = 50;
-      this.ship.y = 50;
+      this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
       this.health = 100;
       this.dba = 0;
+      this.bulletsfired = 0;
       this.bulletdamage = 35;
       this.yourhealth = 100;
       this.dbamultiplier = 1;
@@ -213,7 +239,12 @@ class GameScene extends Scene {
       this.boughtdbaboostbool = false;
       this.boughtcameraheight = false;
       this.minimap.setZoom(0.1);
-      this.healthtext.setText(`Health:${this.health}`);
+      try {
+        this.healthtext.setText(`Health:${this.health}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
       this.dbatext.setText(`DBA:${this.dba}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
@@ -255,6 +286,10 @@ class GameScene extends Scene {
     this.boughthealthboostbool = false;
     this.boughtdbaboostbool = false;
     this.boughtcameraheight = false;
+    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '40px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.socket.on('kicked', () => {
+      this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
+    });
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -276,6 +311,7 @@ class GameScene extends Scene {
     this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      this.lasercolor = 'laserBlue';
       // this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
       // this.anims.create({
       //   key: 'move',
@@ -284,6 +320,7 @@ class GameScene extends Scene {
       //   repeat: -1,
       // });
     } else {
+      this.lasercolor = 'laserRed';
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
 
@@ -318,8 +355,8 @@ class GameScene extends Scene {
 
   updateHitsOnAway = () => {
     if (this.health <= 0) {
-      this.ship.x = 50;
-      this.ship.y = 50;
+      this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
       this.health = 100;
       this.healthtext.setText(`Health:${this.health}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
@@ -394,8 +431,8 @@ class GameScene extends Scene {
         this.notenoughmoney.setText('Not enough DBA');
       }
       if (this.health <= 0) {
-        this.ship.x = 50;
-        this.ship.y = 50;
+        this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+        this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
         this.health = 100;
         this.healthtext.setText(`Health:${this.health}`);
         this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
