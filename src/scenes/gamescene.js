@@ -57,8 +57,6 @@ class GameScene extends Scene {
       email = 'devonc2000@gmail.com';
       username = 'decheftw';
     }
-    console.log(username);
-    this.emailtosend = email;
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
     console.log(this.socket);
@@ -70,22 +68,11 @@ class GameScene extends Scene {
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 20, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-
     this.lasercolor = 'laserRed';
     this.shootingNoise = this.sound.add('pewpew');
     this.pickupsound = this.sound.add('pickup');
     this.hitmarkersound = this.sound.add('hitmarker');
     this.otherPlayers = this.physics.add.group();
-    this.emailtosend = 'test@test.com';
-    this.nametag = '';
-    fbase.auth().onAuthStateChanged((user) => {
-      let { email } = user;
-      const username = user.displayName;
-      if (username === null) { email = 'devonc2000@gmail.com'; }
-      console.log(username);
-      this.emailtosend = email;
-      this.socket.emit('username', [username, email]);
-    });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
       Object.keys(players).forEach((id) => {
