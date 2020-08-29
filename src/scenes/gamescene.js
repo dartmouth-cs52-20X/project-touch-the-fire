@@ -51,6 +51,10 @@ class GameScene extends Scene {
       email = 'devonc2000@gmail.com';
       username = 'decheftw';
     }
+    if (email === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
     console.log(username);
     this.emailtosend = email;
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
