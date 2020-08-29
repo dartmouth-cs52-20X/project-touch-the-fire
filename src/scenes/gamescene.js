@@ -39,6 +39,8 @@ class GameScene extends Scene {
     this.socket = io('localhost:9090');
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.minimap = this.cameras.add(320, 0, 200, 200).setZoom(0.1).setName('mini');
+    this.minimap.setBackgroundColor('black');
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.cameras.main.setBackgroundColor('#086100');
@@ -82,7 +84,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L') };
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -117,7 +119,7 @@ class GameScene extends Scene {
         this.socket.emit('keystoneCollected');
       });
     });
-
+    this.bulletdamage = 35;
     this.okoverlap = 0;
     this.switchstate = 0;
     this.fireDuration = [];
@@ -129,7 +131,16 @@ class GameScene extends Scene {
         this.fired = !this.fired;
         this.shootingNoise.play();
         this.socket.emit('lasershot', {
-          laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id, shooter_team: this.ship.team,
+          laserId: Date.now(),
+          initial_x: this.ship.x,
+          initial_y: this.ship.y,
+          x: this.ship.x,
+          y: this.ship.y,
+          rotation: this.ship.rotation,
+          laser_speed: 15,
+          shotfrom: this.socket.id,
+          shooter_team: this.ship.team,
+          laser_damage: this.bulletdamage,
         });
       }
     });
@@ -192,29 +203,58 @@ class GameScene extends Scene {
       this.restartin.setText('');
       this.ship.x = 50;
       this.ship.y = 50;
-      this.hitstaken = 0;
+      this.health = 100;
+      this.dba = 0;
+      this.bulletdamage = 35;
+      this.yourhealth = 100;
+      this.dbamultiplier = 1;
+      this.boughtbulletdamagebool = false;
+      this.boughthealthboostbool = false;
+      this.boughtdbaboostbool = false;
+      this.boughtcameraheight = false;
+      this.minimap.setZoom(0.1);
+      this.healthtext.setText(`Health:${this.health}`);
+      this.dbatext.setText(`DBA:${this.dba}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
 
-    this.hitstaken = 0;
+    this.yourhealth = 100;
+    this.dbamultiplier = 1;
+    this.health = this.yourhealth;
+    this.dba = 0;
+    this.healthtext = this.add.text(16, 40, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.dbatext = this.add.text(16, 60, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.healthtext.setText(`Health:${this.health}`);
+    this.dbatext.setText(`DBA:${this.dba}`);
     this.lastlasertohit = Date.now();
     this.awayUpdate();
     this.socket.on('hit', (info) => {
       if (info.playerId === this.socket.id) {
         if (this.lastlasertohit !== info.laserId && info.shooter_team !== this.ship.team) {
-          this.hitstaken += 1;
+          this.health -= info.laser_damage;
+          this.healthtext.setText(`Health:${this.health}`);
           this.lastlasertohit = info.laserId;
           this.ship.setAlpha(0.3);
         }
-        console.log(this.hitstaken);
+        console.log(this.health);
       } else {
         this.otherPlayers.getChildren().forEach((player) => {
-          if (player.playerId === info.playerId && player.team !== this.ship.team) {
+          if (this.lastlasertohit !== info.laserId && player.playerId === info.playerId && player.team !== this.ship.team) {
             player.setAlpha(0.3);
+            this.dba += 5 * this.dbamultiplier;
+            this.dbatext.setText(`DBA:${this.dba}`);
+            this.lastlasertohit = info.laserId;
           }
         });
       }
     });
+
+    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.notenoughmoney = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.boughtbulletdamagebool = false;
+    this.boughthealthboostbool = false;
+    this.boughtdbaboostbool = false;
+    this.boughtcameraheight = false;
   }
 
   addOtherPlayers = (playerInfo) => {
@@ -249,6 +289,7 @@ class GameScene extends Scene {
 
     this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
+    this.minimap.startFollow(this.ship);
   }
 
   // found help from below link for knowing when two items are overlapping (ie touching the fire):
@@ -276,10 +317,11 @@ class GameScene extends Scene {
   }
 
   updateHitsOnAway = () => {
-    if (this.hitstaken >= 3) {
+    if (this.health <= 0) {
       this.ship.x = 50;
       this.ship.y = 50;
-      this.hitstaken = 0;
+      this.health = 100;
+      this.healthtext.setText(`Health:${this.health}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     }
   }
@@ -294,10 +336,68 @@ class GameScene extends Scene {
       console.log('disconnect');
     }
     if (this.ship) {
-      if (this.hitstaken >= 3) {
+      this.boughttext.setText('');
+      this.notenoughmoney.setText('');
+      if ((this.cursors.ONE.isDown && this.dba >= 50) || this.boughtbulletdamagebool) {
+        this.bulletdamage = 50;
+        if (this.cursors.ONE.isDown) {
+          this.boughttext.setText('Bought increased bullet damage');
+        }
+        if (this.boughtbulletdamagebool === false) {
+          this.boughtbulletdamagebool = true;
+          this.dba -= 10;
+          console.log(this.dba);
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.TWO.isDown && this.dba >= 50) || this.boughthealthboostbool) {
+        this.yourhealth = 125;
+        if (this.cursors.TWO.isDown) {
+          this.boughttext.setText('Bought increased health');
+        }
+        if (this.boughthealthboostbool === false) {
+          this.boughthealthboostbool = true;
+          this.dba -= 10;
+          this.health = this.yourhealth;
+          this.dbatext.setText(`DBA:${this.dba}`);
+          this.healthtext.setText(`Health:${this.health}`);
+        }
+      } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.THREE.isDown && this.dba >= 75) || this.boughtdbaboostbool) {
+        this.dbamultiplier = 2;
+        if (this.cursors.THREE.isDown) {
+          this.boughttext.setText('Bought increased increased dba per hit');
+        }
+        if (this.boughtdbaboostbool === false) {
+          this.boughtdbaboostbool = true;
+          this.dba -= 10;
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.FOUR.isDown && this.dba >= 100) || this.boughtcameraheight) {
+        this.minimap.setZoom(0.08);
+        if (this.cursors.FOUR.isDown) {
+          this.boughttext.setText('Bought increased minimap');
+        }
+        if (this.boughtcameraheight === false) {
+          this.boughtcameraheight = true;
+          this.dba -= 10;
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if (this.health <= 0) {
         this.ship.x = 50;
         this.ship.y = 50;
-        this.hitstaken = 0;
+        this.health = 100;
+        this.healthtext.setText(`Health:${this.health}`);
         this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
       }
       if (this.ship.alpha < 1) {
