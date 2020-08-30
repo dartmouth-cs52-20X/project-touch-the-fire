@@ -114,25 +114,26 @@ class GameScene extends Scene {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
       this.redScoreText.setText(`Red: ${scores.red}`);
     });
-
     this.socket.on('starLocation', (starLocation) => {
       if (this.star) this.star.destroy();
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
         this.pickupsound.play();
+        this.staronepicked = false;
         this.socket.emit('starCollected');
-        this.dba += 4;
+        this.dba += 3;
         this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
 
     this.socket.on('starLocationtwo', (starLocation) => {
       if (this.startwo) this.startwo.destroy();
+      this.startwopicked = false;
       this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.startwo, () => {
         this.pickupsound.play();
         this.socket.emit('starCollectedtwo');
-        this.dba += 4;
+        this.dba += 3;
         this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
