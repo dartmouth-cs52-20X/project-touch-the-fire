@@ -1,5 +1,5 @@
 # Touch the Fire
-![Team Photo](Insert a Team Photo URL here)
+![Team Photo](https://i.imgur.com/NI5zYTs.jpg)
 
 Touch the Fire is a WASD multiplayer game with two teams of 3-5 players (students and defenders). The goal of the students is to get one player to touch the fire, and the goal of the defenders is to prevent anyone from touching the fire. 
 
