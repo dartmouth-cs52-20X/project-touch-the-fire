@@ -28,16 +28,16 @@ class PowerUp extends Component {
         <div className="power-up-items">
           <div className="powerup-row">
             <div className="powerup-item" onClick={() => this.onPowerUp($('#key1').attr('alt'))}>
-              <img id="key1" src={bullet} alt="50 DBA: Press 1 for Increased Bullet Damage" />
+              <img id="key1" src={bullet} alt="250 DBA: Press 1 for Increased Bullet Damage" />
             </div>
             <div className="powerup-item" onClick={() => this.onPowerUp($('#key2').attr('alt'))}>
-              <img id="key2" src={health} alt="50 DBA: Press 2 for Increased Health" />
+              <img id="key2" src={health} alt="270 DBA: Press 2 for Increased Health" />
             </div>
             <div className="powerup-item" onClick={() => this.onPowerUp($('#key3').attr('alt'))}>
-              <img id="key3" src={money} alt="75 DBA: Press 3 for Extra DBA Per Hit" />
+              <img id="key3" src={money} alt="300 DBA: Press 3 for Extra DBA Per Hit" />
             </div>
             <div className="powerup-item" onClick={() => this.onPowerUp($('#key4').attr('alt'))}>
-              <img id="key4" src={map} alt="100 DBA: Press 4 for Extra Zoomed Minimap" />
+              <img id="key4" src={map} alt="350 DBA: Press 4 for Extra Zoomed Minimap" />
             </div>
           </div>
         </div>

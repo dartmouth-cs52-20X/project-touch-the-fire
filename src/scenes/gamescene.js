@@ -276,11 +276,11 @@ class GameScene extends Scene {
       this.restartin.setText('');
       this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
       this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-      this.health = 100;
+      this.health = 150;
       this.dba = 0;
       this.bulletsfired = 0;
       this.bulletdamage = 35;
-      this.yourhealth = 100;
+      this.yourhealth = 150;
       this.dbamultiplier = 1;
       this.boughtbulletdamagebool = false;
       this.bought1booltest = false;
@@ -303,7 +303,7 @@ class GameScene extends Scene {
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
 
-    this.yourhealth = 100;
+    this.yourhealth = 150;
     this.dbamultiplier = 1;
     this.health = this.yourhealth;
     this.dba = 0;
@@ -412,7 +412,7 @@ class GameScene extends Scene {
     if (this.health <= 0) {
       this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
       this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-      this.health = 100;
+      this.health = this.yourhealth;
       this.healthtext.setText(`Health:${this.health}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     }
@@ -483,7 +483,7 @@ class GameScene extends Scene {
         }
       }
 
-      if ((this.cursors.ONE.isDown && this.dba >= 50) && !this.boughtbulletdamagebool) {
+      if ((this.cursors.ONE.isDown && this.dba >= 250) && !this.boughtbulletdamagebool) {
         this.bulletdamage = 50;
         if (this.cursors.ONE.isDown) {
           this.boughttext.setText('Bought Extra Bullet Damage');
@@ -491,30 +491,30 @@ class GameScene extends Scene {
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
           this.bought1booltest = true;
-          this.dba -= 50;
+          this.dba -= 250;
           console.log(this.dba);
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
+      } else if (this.cursors.ONE.isDown && this.dba <= 250 && this.boughtbulletdamagebool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.TWO.isDown && this.dba >= 50) && !this.boughthealthboostbool) {
-        this.yourhealth = 125;
+      if ((this.cursors.TWO.isDown && this.dba >= 270) && !this.boughthealthboostbool) {
+        this.yourhealth = 180;
         if (this.cursors.TWO.isDown) {
           this.boughttext.setText('Bought Increased Health');
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
           this.bought2booltest = true;
-          this.dba -= 50;
+          this.dba -= 270;
           this.health = this.yourhealth;
           this.dbatext.setText(`DBA:${this.dba}`);
           this.healthtext.setText(`Health:${this.health}`);
         }
-      } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
+      } else if (this.cursors.TWO.isDown && this.dba <= 270 && this.boughthealthboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.THREE.isDown && this.dba >= 75) && !this.boughtdbaboostbool) {
+      if ((this.cursors.THREE.isDown && this.dba >= 300) && !this.boughtdbaboostbool) {
         this.dbamultiplier = 2;
         if (this.cursors.THREE.isDown) {
           this.boughttext.setText('Bought Extra DBA Per Hit');
@@ -523,13 +523,13 @@ class GameScene extends Scene {
           this.boughtdbaboostbool = true;
           this.bought3booltest = true;
 
-          this.dba -= 75;
+          this.dba -= 300;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
+      } else if (this.cursors.THREE.isDown && this.dba <= 300 && this.boughtdbaboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.FOUR.isDown && this.dba >= 100) && !this.boughtcameraheight) {
+      if ((this.cursors.FOUR.isDown && this.dba >= 350) && !this.boughtcameraheight) {
         this.minimap.setZoom(0.08);
         if (this.cursors.FOUR.isDown) {
           this.boughttext.setText('Bought Expanded Minimap');
@@ -537,16 +537,16 @@ class GameScene extends Scene {
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
           this.bought4booltest = true;
-          this.dba -= 100;
+          this.dba -= 350;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
+      } else if (this.cursors.FOUR.isDown && this.dba <= 350 && this.boughtcameraheight === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
       if (this.health <= 0) {
         this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
         this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-        this.health = 100;
+        this.health = this.yourhealth;
         this.healthtext.setText(`Health:${this.health}`);
         this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
       }
