@@ -30,7 +30,7 @@ class Nav extends Component {
         </div>
         <div>
           <ul>
-            <li><NavLink to="/"><button type="button" id="nav-signout" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>
+            <li><NavLink to="/"><button type="button" className="button-var3" onClick={this.handleSignOut}>Sign Out</button></NavLink></li>
           </ul>
         </div>
       </nav>
