@@ -54,7 +54,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div>
+        <div id="main-top">
           {this.renderNav()}
           <Switch>
             <Route exact path="/" component={LandingPage} />

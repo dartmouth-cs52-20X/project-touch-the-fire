@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable eqeqeq */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/no-unused-state */
@@ -165,11 +166,13 @@ class Leaderboard extends Component {
         <div id="lb-title">
           <h1>Leaderboard</h1>
         </div>
-        <div id="lb_buttons">
-          <p onClick={this.generateLeaderboardDBA}>DBA</p>
-          <p onClick={this.generateLeaderboardWins}>Wins</p>
-          <p onClick={this.generateLeaderboardShots}>Shots Fired</p>
+
+        <div id="lb-buttons">
+          <div className="lb-select" onClick={this.generateLeaderboardDBA}>Total DBA</div>
+          <div className="lb-select" onClick={this.generateLeaderboardWins}>Total Wins</div>
+          <div className="lb-select" onClick={this.generateLeaderboardShots}>Shots Fired</div>
         </div>
+
         <div id="leaderboard-top">
           {this.state.leaderboard}
         </div>
