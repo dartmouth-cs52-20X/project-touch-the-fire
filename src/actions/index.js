@@ -37,7 +37,7 @@ export function createChatMessage(socket, chatMessage) {
       message: chatMessage.message,
       id: 1,
     };
-    socket.emit('createChatMessage', chatMessage);
+    socket.emit('createChatMessage', chatMessage, socket.id); // socket
     dispatch({ type: ActionTypes.CREATE_CHAT_MESSAGE, payload: fields });
   };
 }
