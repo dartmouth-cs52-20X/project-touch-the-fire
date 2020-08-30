@@ -119,7 +119,6 @@ class GameScene extends Scene {
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
         this.pickupsound.play();
-        this.staronepicked = false;
         this.socket.emit('starCollected');
         this.dba += 3;
         this.dbatext.setText(`DBA:${this.dba}`);
@@ -128,7 +127,6 @@ class GameScene extends Scene {
 
     this.socket.on('starLocationtwo', (starLocation) => {
       if (this.startwo) this.startwo.destroy();
-      this.startwopicked = false;
       this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.startwo, () => {
         this.pickupsound.play();
