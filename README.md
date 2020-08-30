@@ -1,5 +1,5 @@
 # Touch the Fire
-![Team Photo](https://i.imgur.com/NI5zYTs.jpg)
+![Team Photo](https://i.imgur.com/VrUfsHW.png)
 
 Touch the Fire is a WASD multiplayer game with two teams of 3 players. The goal of each team is to touch the fire for longer than the other team.  Each player is able to shoot projectiles to send opponents back to the edges of the map.  The map is scattered with DBA, which can be used to buy a variety of powerups.  Powerups include:
 * More bullet damage
@@ -92,6 +92,8 @@ You can find gifs of our site in action in the [home wiki page](https://github.c
 ## Acknowledgments
 
 Thanks to our TAs and Tim for helping out on the project.
+
+We want to thank our mothers in addition to Steve Jobs for the inspiration and love they have given us.
 
 ### Testing
 In order to test locally, on line 61 of project-touch-the-fire/src/scenes/gamescene.js/, make sure that the socket is pointed towards http://localhost:9090 (which it already is).  Then, you just need to run `yarn start` for the client and `yarn dev` for the server.  The site will be running at http://localhost:8080, and the server will be running at http://localhost:9090.
