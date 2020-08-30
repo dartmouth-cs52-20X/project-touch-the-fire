@@ -121,7 +121,7 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.star, () => {
         this.pickupsound.play();
         this.socket.emit('starCollected');
-        this.dba += 10;
+        this.dba += 4;
         this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
@@ -132,7 +132,7 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.startwo, () => {
         this.pickupsound.play();
         this.socket.emit('starCollectedtwo');
-        this.dba += 10;
+        this.dba += 4;
         this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
@@ -143,10 +143,10 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.keystone, () => {
         this.pickupsound.play();
         this.socket.emit('keystoneCollected');
-        this.dba += 5;
+        this.dba += 2;
         this.dbatext.setText(`DBA:${this.dba}`);
         if (this.health < 100) {
-          this.health += 35;
+          this.health += 15;
           this.healthtext.setText(`Health:${this.health}`);
         }
       });
@@ -157,10 +157,10 @@ class GameScene extends Scene {
       this.physics.add.overlap(this.ship, this.keystonetwo, () => {
         this.pickupsound.play();
         this.socket.emit('keystoneCollectedtwo');
-        this.dba += 5;
+        this.dba += 2;
         this.dbatext.setText(`DBA:${this.dba}`);
         if (this.health < 100) {
-          this.health += 35;
+          this.health += 15;
           this.healthtext.setText(`Health:${this.health}`);
         }
       });
