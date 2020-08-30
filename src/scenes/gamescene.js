@@ -44,6 +44,19 @@ class GameScene extends Scene {
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
+    let email, username;
+    const user = fbase.auth().currentUser;
+    email = user.email;
+    username = user.displayName;
+    console.log(email, username);
+    if (username === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
+    if (email === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
     console.log(this.socket);
@@ -55,22 +68,11 @@ class GameScene extends Scene {
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 20, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-
     this.lasercolor = 'laserRed';
     this.shootingNoise = this.sound.add('pewpew');
     this.pickupsound = this.sound.add('pickup');
     this.hitmarkersound = this.sound.add('hitmarker');
     this.otherPlayers = this.physics.add.group();
-    this.emailtosend = 'test@test.com';
-    this.nametag = '';
-    fbase.auth().onAuthStateChanged((user) => {
-      let { email } = user;
-      const username = user.displayName;
-      if (username === null) { email = 'devonc2000@gmail.com'; }
-      console.log(username);
-      this.emailtosend = email;
-      this.socket.emit('username', [username, email]);
-    });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
       Object.keys(players).forEach((id) => {
@@ -245,7 +247,15 @@ class GameScene extends Scene {
         console.log('errorcatchactivated');
         this.socket.emit('forcedisconnect');
       }
-      this.socket.emit('leaderboarddata', { winner: data.winner, bulletsfired: this.bulletsfired, dba: this.dba });
+      let win = 1;
+      // eslint-disable-next-line eqeqeq
+      if (this.ship.team.localeCompare(data.winner) == 0) {
+        win = 1;
+      } else { win = 0; }
+      console.log(email, username);
+      this.socket.emit('leaderboarddata', {
+        user: username, em: email, winner: win, bulletsfired: this.bulletsfired, dba: this.dba,
+      });
     });
 
     this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
@@ -266,11 +276,11 @@ class GameScene extends Scene {
       this.restartin.setText('');
       this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
       this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-      this.health = 100;
+      this.health = 150;
       this.dba = 0;
       this.bulletsfired = 0;
       this.bulletdamage = 35;
-      this.yourhealth = 100;
+      this.yourhealth = 150;
       this.dbamultiplier = 1;
       this.boughtbulletdamagebool = false;
       this.bought1booltest = false;
@@ -293,7 +303,7 @@ class GameScene extends Scene {
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
 
-    this.yourhealth = 100;
+    this.yourhealth = 150;
     this.dbamultiplier = 1;
     this.health = this.yourhealth;
     this.dba = 0;
@@ -402,7 +412,7 @@ class GameScene extends Scene {
     if (this.health <= 0) {
       this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
       this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-      this.health = 100;
+      this.health = this.yourhealth;
       this.healthtext.setText(`Health:${this.health}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     }
@@ -473,7 +483,7 @@ class GameScene extends Scene {
         }
       }
 
-      if ((this.cursors.ONE.isDown && this.dba >= 50) && !this.boughtbulletdamagebool) {
+      if ((this.cursors.ONE.isDown && this.dba >= 250) && !this.boughtbulletdamagebool) {
         this.bulletdamage = 50;
         if (this.cursors.ONE.isDown) {
           this.boughttext.setText('Bought Extra Bullet Damage');
@@ -481,30 +491,30 @@ class GameScene extends Scene {
         if (this.boughtbulletdamagebool === false) {
           this.boughtbulletdamagebool = true;
           this.bought1booltest = true;
-          this.dba -= 50;
+          this.dba -= 250;
           console.log(this.dba);
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
+      } else if (this.cursors.ONE.isDown && this.dba <= 250 && this.boughtbulletdamagebool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.TWO.isDown && this.dba >= 50) && !this.boughthealthboostbool) {
-        this.yourhealth = 125;
+      if ((this.cursors.TWO.isDown && this.dba >= 270) && !this.boughthealthboostbool) {
+        this.yourhealth = 180;
         if (this.cursors.TWO.isDown) {
           this.boughttext.setText('Bought Increased Health');
         }
         if (this.boughthealthboostbool === false) {
           this.boughthealthboostbool = true;
           this.bought2booltest = true;
-          this.dba -= 50;
+          this.dba -= 270;
           this.health = this.yourhealth;
           this.dbatext.setText(`DBA:${this.dba}`);
           this.healthtext.setText(`Health:${this.health}`);
         }
-      } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
+      } else if (this.cursors.TWO.isDown && this.dba <= 270 && this.boughthealthboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.THREE.isDown && this.dba >= 75) && !this.boughtdbaboostbool) {
+      if ((this.cursors.THREE.isDown && this.dba >= 300) && !this.boughtdbaboostbool) {
         this.dbamultiplier = 2;
         if (this.cursors.THREE.isDown) {
           this.boughttext.setText('Bought Extra DBA Per Hit');
@@ -513,13 +523,13 @@ class GameScene extends Scene {
           this.boughtdbaboostbool = true;
           this.bought3booltest = true;
 
-          this.dba -= 75;
+          this.dba -= 300;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
+      } else if (this.cursors.THREE.isDown && this.dba <= 300 && this.boughtdbaboostbool === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
-      if ((this.cursors.FOUR.isDown && this.dba >= 100) && !this.boughtcameraheight) {
+      if ((this.cursors.FOUR.isDown && this.dba >= 350) && !this.boughtcameraheight) {
         this.minimap.setZoom(0.08);
         if (this.cursors.FOUR.isDown) {
           this.boughttext.setText('Bought Expanded Minimap');
@@ -527,16 +537,16 @@ class GameScene extends Scene {
         if (this.boughtcameraheight === false) {
           this.boughtcameraheight = true;
           this.bought4booltest = true;
-          this.dba -= 100;
+          this.dba -= 350;
           this.dbatext.setText(`DBA:${this.dba}`);
         }
-      } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
+      } else if (this.cursors.FOUR.isDown && this.dba <= 350 && this.boughtcameraheight === false) {
         this.notenoughmoney.setText('Not enough DBA');
       }
       if (this.health <= 0) {
         this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
         this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
-        this.health = 100;
+        this.health = this.yourhealth;
         this.healthtext.setText(`Health:${this.health}`);
         this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
       }

@@ -25,24 +25,29 @@ class SignUp extends Component {
   handleSignUpPress = (event) => {
     event.preventDefault();
 
-    fbase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
-      const user = fbase.auth().currentUser;
+    if (this.state.username) {
+      fbase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
+        const user = fbase.auth().currentUser;
 
-      user.updateProfile({ displayName: this.state.username }).then(() => {
-        console.log('username added');
-        // Add the newly signed-in user's username to the Redux store
-        this.props.signIn(this.state.username);
-      }).catch((err) => { console.log(err); });
-      console.log(u);
+        user.updateProfile({ displayName: this.state.username }).then(() => {
+          console.log('username added');
+          // Add the newly signed-in user's username to the Redux store
+          this.props.signIn(this.state.username);
+        }).catch((err) => { console.log(err); });
+        console.log(u);
 
-      document.getElementById('sign-up-failed').classList.add('hidden');
-      document.getElementById('sign-up-failed').classList.remove('sign-in-up-fail');
-      this.props.history.push('/');
-    }).catch((err) => {
-      console.log(err);
+        document.getElementById('sign-up-failed').classList.add('hidden');
+        document.getElementById('sign-up-failed').classList.remove('sign-in-up-fail');
+        this.props.history.push('/');
+      }).catch((err) => {
+        console.log(err);
+        document.getElementById('sign-in-failed').classList.remove('hidden');
+        document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
+      });
+    } else {
       document.getElementById('sign-in-failed').classList.remove('hidden');
       document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
-    });
+    }
   }
 
   handleGuestLogin = (event) => {
@@ -67,6 +72,7 @@ class SignUp extends Component {
           <div id="sign-in-failed" className="hidden">
             <h2>Sign Up Failed</h2>
             <h4>Ensure your email is valid</h4>
+            <h4>Ensure you chose a username</h4>
             <h4>Ensure your password is 6+ characters</h4>
           </div>
         </form>
