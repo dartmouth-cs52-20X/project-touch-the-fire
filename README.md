@@ -69,6 +69,4 @@ The server is hosted through Heroku.
 * Suraj Srivats
 
 ## Acknowledgments
-
-### Testing
-heroku deploy test travis-boundary test, test 4
+We want to thank our mothers in addition to Steve Jobs for the inspiration and love they have given us.
