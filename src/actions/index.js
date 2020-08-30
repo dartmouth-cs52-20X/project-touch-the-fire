@@ -4,7 +4,6 @@ export const ActionTypes = {
   SIGNOUT: 'SIGNOUT',
   SET_CHAT_MESSAGES: 'SET_CHAT_MESSAGES',
   CREATE_CHAT_MESSAGE: 'CREATE_CHAT_MESSAGE',
-  CLEAR_CHAT: 'CLEAR_CHAT',
 };
 
 export function signIn(username) {
@@ -40,12 +39,5 @@ export function createChatMessage(socket, chatMessage) {
     };
     socket.emit('createChatMessage', chatMessage);
     dispatch({ type: ActionTypes.CREATE_CHAT_MESSAGE, payload: fields });
-  };
-}
-
-export function clearChat(socket) {
-  return (dispatch) => {
-    socket.emit('clearChat');
-    dispatch({ type: ActionTypes.CLEAR_CHAT });
   };
 }

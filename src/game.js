@@ -8,6 +8,7 @@ import { signIn } from './actions';
 import GameScene from './scenes/gamescene';
 import fbase from './config/fire';
 import Chat from './components/chat';
+import PowerUp from './components/powerup-menu';
 import socket from './config/socket';
 
 class Game extends Component {
@@ -19,7 +20,7 @@ class Game extends Component {
       game: {
         type: Phaser.AUTO,
         width: '80%',
-        height: '100%',
+        height: '95%',
         physics: {
           default: 'arcade',
           arcade: {
@@ -78,7 +79,10 @@ class Game extends Component {
       <div className="game-wrapper">
         <div>
           <IonPhaser game={game} initialize={initialize} />
-          <Chat id="chat" />
+          <div className="big-chat-wrapper">
+            <PowerUp id="game-pmenu" />
+            <Chat id="chat" />
+          </div>
         </div>
       </div>
 

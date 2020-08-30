@@ -9,6 +9,14 @@ import redplayer from '../assets/red_above.png';
 import green from '../assets/green.png';
 import fire from '../assets/fire.png';
 import keystone from '../assets/keystone.png';
+import laserRed from '../assets/laserRed.png';
+import laserBlue from '../assets/laserBlue.png';
+
+import shootNoise from '../assets/beam.mp3';
+import pickupsound from '../assets/pickup.mp3';
+import hitmarker from '../assets/hitmarker.mp3';
+// import icepng from '../assets/fonts/bitmap/iceicebaby.png';
+// import icexml from '../assets/fonts/bitmap/iceicebaby.xml';
 
 const MAP_VIEW_MULT = 2;
 class GameScene extends Scene {
@@ -26,26 +34,45 @@ class GameScene extends Scene {
     this.load.image('fire', fire);
     this.load.image('green', green);
     this.load.image('keystone', keystone);
+    this.load.image('laserRed', laserRed);
+    this.load.image('laserBlue', laserBlue);
+    this.load.audio('pickup', pickupsound);
+    this.load.audio('pewpew', shootNoise);
+    this.load.audio('hitmarker', hitmarker);
+    // this.load.bitmapFont('ice', '../assets/fonts/bitmap/iceicebaby.png', '../assets/fonts/bitmap/iceicebaby.xml');
   }
 
   /* Starting template was adapted from phaser intro tutorial at https://phasertutorials.com/creating-a-simple-multiplayer-game-in-phaser-3-with-an-authoritative-server-part-1/ */
   create() {
+    let email, username;
+    const user = fbase.auth().currentUser;
+    email = user.email;
+    username = user.displayName;
+    console.log(email, username);
+    if (username === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
+    if (email === null) {
+      email = 'devonc2000@gmail.com';
+      username = 'decheftw';
+    }
     // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
     this.socket = io('localhost:9090');
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
+    this.socket.emit('isgame', { x: 1 });
+    this.minimap = this.cameras.add(0, 0, 150, 150).setZoom(0.1).setName('mini');
+    this.minimap.setBackgroundColor('black');
     // eslint-disable-next-line max-len
     this.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2), 'green').setDisplaySize(this.game.canvas.width * MAP_VIEW_MULT, this.game.canvas.height * MAP_VIEW_MULT);
     this.cameras.main.setBackgroundColor('#086100');
     this.fire = this.physics.add.image(this.game.canvas.width * (MAP_VIEW_MULT / 2), this.game.canvas.height * (MAP_VIEW_MULT / 2) + 20, 'fire').setDisplaySize(50 * 1.8, 65 * 1.8);
-
+    this.lasercolor = 'laserRed';
+    this.shootingNoise = this.sound.add('pewpew');
+    this.pickupsound = this.sound.add('pickup');
+    this.hitmarkersound = this.sound.add('hitmarker');
     this.otherPlayers = this.physics.add.group();
-    fbase.auth().onAuthStateChanged((user) => {
-      let username = user.displayName;
-      if (username === null) { username = 'decheftw'; }
-      console.log(username);
-      this.socket.emit('username', username);
-    });
     this.socket.on('currentPlayers', (players) => {
       console.log(players);
       Object.keys(players).forEach((id) => {
@@ -69,7 +96,7 @@ class GameScene extends Scene {
     });
 
     // added wasd keys to movement
-    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L') };
+    this.cursors = { ...this.input.keyboard.addKeys('W,S,A,D,SPACE,I,J,K,L,ONE,TWO,THREE,FOUR,M') };
 
     this.socket.on('playerMoved', (playerInfo) => {
       this.otherPlayers.getChildren().forEach((otherPlayer) => {
@@ -79,7 +106,7 @@ class GameScene extends Scene {
         }
       });
     });
-    this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
+    this.blueScoreText = this.add.text(170, 16, '', { fontSize: '32px', fill: '#0000FF' }).setScrollFactor(0);
     this.countDownText = this.add.text(this.game.canvas.width * 0.5, 16, '', { fontSize: '32px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
     this.redScoreText = this.add.text(this.game.canvas.width * 0.8, 16, '', { fontSize: '32px', fill: '#FF0000' }).setScrollFactor(0);
 
@@ -92,8 +119,21 @@ class GameScene extends Scene {
       if (this.star) this.star.destroy();
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
-        console.log('pew');
+        this.pickupsound.play();
         this.socket.emit('starCollected');
+        this.dba += 10;
+        this.dbatext.setText(`DBA:${this.dba}`);
+      });
+    });
+
+    this.socket.on('starLocationtwo', (starLocation) => {
+      if (this.startwo) this.startwo.destroy();
+      this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.startwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('starCollectedtwo');
+        this.dba += 10;
+        this.dbatext.setText(`DBA:${this.dba}`);
       });
     });
 
@@ -101,21 +141,54 @@ class GameScene extends Scene {
       if (this.keystone) this.keystone.destroy();
       this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.keystone, () => {
+        this.pickupsound.play();
         this.socket.emit('keystoneCollected');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
+        if (this.health < 100) {
+          this.health += 35;
+          this.healthtext.setText(`Health:${this.health}`);
+        }
       });
     });
-
+    this.socket.on('keystoneLocationtwo', (keystoneLocation) => {
+      if (this.keystonetwo) this.keystonetwo.destroy();
+      this.keystonetwo = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.keystonetwo, () => {
+        this.pickupsound.play();
+        this.socket.emit('keystoneCollectedtwo');
+        this.dba += 5;
+        this.dbatext.setText(`DBA:${this.dba}`);
+        if (this.health < 100) {
+          this.health += 35;
+          this.healthtext.setText(`Health:${this.health}`);
+        }
+      });
+    });
+    this.bulletdamage = 35;
     this.okoverlap = 0;
     this.switchstate = 0;
     this.fireDuration = [];
     this.firescorethreshold = 0;
     this.game.input.keyboard.clearCaptures();
     this.fired = false;
+    this.bulletsfired = 0;
     this.input.keyboard.on('keydown_SPACE', () => {
       if (!this.fired && this.input.isOver) {
         this.fired = !this.fired;
+        this.shootingNoise.play();
+        this.bulletsfired += 1;
         this.socket.emit('lasershot', {
-          laserId: Date.now(), initial_x: this.ship.x, initial_y: this.ship.y, x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation, laser_speed: 15, shotfrom: this.socket.id, shooter_team: this.ship.team,
+          laserId: Date.now(),
+          initial_x: this.ship.x,
+          initial_y: this.ship.y,
+          x: this.ship.x,
+          y: this.ship.y,
+          rotation: this.ship.rotation,
+          laser_speed: 15,
+          shotfrom: this.socket.id,
+          shooter_team: this.ship.team,
+          laser_damage: this.bulletdamage,
         });
       }
     });
@@ -130,12 +203,16 @@ class GameScene extends Scene {
         this.socket.emit('forcedisconnect');
       }
     });
-
+    // eslint-disable-next-line new-cap
+    this.hsv = Phaser.Display.Color.HSVColorWheel();
+    this.i = 0;
     this.lasers = [];
     this.socket.on('laser-locationchange', (updatedLasers) => {
       updatedLasers.forEach((item, index) => {
-        if (this.lasers[index] === undefined) {
-          this.lasers[index] = this.add.sprite(item.x, item.y, 'money').setDisplaySize(20, 10);
+        if (this.lasers[index] === undefined && item.shooter_team === 'red') {
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'laserRed').setDisplaySize(20, 10);
+        } else if (this.lasers[index] === undefined && item.shooter_team === 'blue') {
+          this.lasers[index] = this.add.sprite(item.x, item.y, 'laserBlue').setDisplaySize(20, 10);
         } else {
           this.lasers[index].x = item.x;
           this.lasers[index].y = item.y;
@@ -148,13 +225,42 @@ class GameScene extends Scene {
         }
       });
     });
-    this.gameendtext = this.add.text((this.game.canvas.width / 2) - 100, this.game.canvas.height / 2, '', { fontSize: '60px', fill: '#FFFF00' }).setScrollFactor(0);
 
+    // rainbow text inspiration from  https://phaser.io/examples/v3/view/display/tint/rainbow-text
+    this.gameendtext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('gameover', (data) => {
-      this.gameendtext.setText(`${data.text}`);
+      try {
+        this.gameendtext.setText(`${data.text}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setStroke('#00f', 16);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      try {
+        this.gameendtext.setShadow(2, 2, '#333333', 2, true, true);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      let win = 1;
+      // eslint-disable-next-line eqeqeq
+      if (this.ship.team.localeCompare(data.winner) == 0) {
+        win = 1;
+      } else { win = 0; }
+      console.log(email, username);
+      this.socket.emit('leaderboarddata', {
+        user: username, em: email, winner: win, bulletsfired: this.bulletsfired, dba: this.dba,
+      });
     });
 
-    this.restartin = this.add.text((this.game.canvas.width / 2) - 100, (this.game.canvas.height / 2) - 40, '', { fontSize: '55px', fill: '#FFFF00', fontFamily: 'Orbitron' }).setScrollFactor(0);
+    this.restartin = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) + 60, '', { fontSize: '55px', fill: '#000' }).setOrigin(0.5).setScrollFactor(0);
+    this.restartin.setStroke('#fff', 16);
+    // this.restartin.setShadown(2, 2, '#333333', 2, true, true);
 
     this.socket.on('restarttick', (time) => {
       try {
@@ -168,30 +274,76 @@ class GameScene extends Scene {
     this.socket.on('restart', (payload) => {
       this.gameendtext.setText('');
       this.restartin.setText('');
-      this.ship.x = 50;
-      this.ship.y = 50;
-      this.hitstaken = 0;
+      this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.health = 100;
+      this.dba = 0;
+      this.bulletsfired = 0;
+      this.bulletdamage = 35;
+      this.yourhealth = 100;
+      this.dbamultiplier = 1;
+      this.boughtbulletdamagebool = false;
+      this.bought1booltest = false;
+      this.bought2booltest = false;
+      this.bought3booltest = false;
+      this.bought4booltest = false;
+
+      this.boughthealthboostbool = false;
+      this.boughtdbaboostbool = false;
+      this.boughtcameraheight = false;
+
+      this.minimap.setZoom(0.1);
+      try {
+        this.healthtext.setText(`Health:${this.health}`);
+      } catch {
+        console.log('errorcatchactivated');
+        this.socket.emit('forcedisconnect');
+      }
+      this.dbatext.setText(`DBA:${this.dba}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     });
 
-    this.hitstaken = 0;
+    this.yourhealth = 100;
+    this.dbamultiplier = 1;
+    this.health = this.yourhealth;
+    this.dba = 0;
+    this.healthtext = this.add.text(16, this.game.canvas.height * 0.9, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
+    this.dbatext = this.add.text(16, this.game.canvas.height * 0.95, '', { fontSize: '32px', fill: '#000000' }).setScrollFactor(0);
+    this.healthtext.setText(`Health:${this.health}`);
+    this.dbatext.setText(`DBA:${this.dba}`);
     this.lastlasertohit = Date.now();
     this.awayUpdate();
     this.socket.on('hit', (info) => {
       if (info.playerId === this.socket.id) {
         if (this.lastlasertohit !== info.laserId && info.shooter_team !== this.ship.team) {
-          this.hitstaken += 1;
+          this.health -= info.laser_damage;
+          this.healthtext.setText(`Health:${this.health}`);
           this.lastlasertohit = info.laserId;
           this.ship.setAlpha(0.3);
         }
-        console.log(this.hitstaken);
+        console.log(this.health);
       } else {
         this.otherPlayers.getChildren().forEach((player) => {
-          if (player.playerId === info.playerId && player.team !== this.ship.team) {
+          if (this.lastlasertohit !== info.laserId && player.playerId === info.playerId && player.team !== this.ship.team) {
             player.setAlpha(0.3);
+            this.hitmarkersound.play();
+            this.dba += 5 * this.dbamultiplier;
+            this.dbatext.setText(`DBA:${this.dba}`);
+            this.lastlasertohit = info.laserId;
           }
         });
       }
+    });
+
+    this.boughttext = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '38px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.notenoughmoney = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '60px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.boughtbulletdamagebool = false;
+    this.boughthealthboostbool = false;
+    this.boughtdbaboostbool = false;
+    this.boughtcameraheight = false;
+    this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '35px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
+    this.socket.on('kicked', () => {
+      this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
     });
   }
 
@@ -214,6 +366,7 @@ class GameScene extends Scene {
     this.ship;
     if (playerInfo.team === 'blue') {
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
+      this.lasercolor = 'laserBlue';
       // this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'blueplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
       // this.anims.create({
       //   key: 'move',
@@ -222,11 +375,13 @@ class GameScene extends Scene {
       //   repeat: -1,
       // });
     } else {
+      this.lasercolor = 'laserRed';
       this.ship = this.physics.add.image(playerInfo.x, playerInfo.y, 'redplayer').setOrigin(0.5, 0.5).setDisplaySize(65, 40);
     }
 
     this.ship.team = playerInfo.team;
     this.cameras.main.startFollow(this.ship);
+    this.minimap.startFollow(this.ship);
   }
 
   // found help from below link for knowing when two items are overlapping (ie touching the fire):
@@ -254,10 +409,11 @@ class GameScene extends Scene {
   }
 
   updateHitsOnAway = () => {
-    if (this.hitstaken >= 3) {
-      this.ship.x = 50;
-      this.ship.y = 50;
-      this.hitstaken = 0;
+    if (this.health <= 0) {
+      this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
+      this.health = 100;
+      this.healthtext.setText(`Health:${this.health}`);
       this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
     }
   }
@@ -271,11 +427,127 @@ class GameScene extends Scene {
       this.socket.emit('disconnect', () => { console.log('game ended'); });
       console.log('disconnect');
     }
+    if (this.cursors.M.isDown && this.toggle === true && this.input.isOver) {
+      this.toggle = false;
+      this.game.sound.mute = !this.game.sound.mute;
+    } else if (this.cursors.M.isUp && this.input.isOver) {
+      this.toggle = true;
+    }
     if (this.ship) {
-      if (this.hitstaken >= 3) {
-        this.ship.x = 50;
-        this.ship.y = 50;
-        this.hitstaken = 0;
+      this.boughttext.setText('');
+      this.notenoughmoney.setText('');
+
+      // This chunk of code is to bypass update refresh rate to enable bought/already bought center texts
+      if (this.cursors.ONE.isUp) {
+        this.bought1booltest = false;
+      }
+      if (this.cursors.TWO.isUp) {
+        this.bought2booltest = false;
+      }
+      if (this.cursors.THREE.isUp) {
+        this.bought3booltest = false;
+      }
+      if (this.cursors.FOUR.isUp) {
+        this.bought4booltest = false;
+      }
+
+      if (this.cursors.ONE.isDown && this.boughtbulletdamagebool) {
+        if (!this.bought1booltest) {
+          this.boughttext.setText('Already purchased Extra Bullet Damage');
+        } else {
+          this.boughttext.setText('Bought Extra Bullet Damage');
+        }
+      }
+
+      if (this.cursors.TWO.isDown && this.boughthealthboostbool) {
+        if (!this.bought2booltest) {
+          this.boughttext.setText('Already purchased Increased Health');
+        } else {
+          this.boughttext.setText('Bought Increased Health');
+        }
+      }
+
+      if (this.cursors.THREE.isDown && this.boughtdbaboostbool) {
+        if (!this.bought3booltest) {
+          this.boughttext.setText('Already purchased Extra DBA Per Hit');
+        } else {
+          this.boughttext.setText('Bought Extra DBA Per Hit');
+        }
+      }
+
+      if (this.cursors.FOUR.isDown && this.boughtcameraheight) {
+        if (!this.bought4booltest) {
+          this.boughttext.setText('Already purchased Expanded Minimap');
+        } else {
+          this.boughttext.setText('Bought Expanded Minimap');
+        }
+      }
+
+      if ((this.cursors.ONE.isDown && this.dba >= 50) && !this.boughtbulletdamagebool) {
+        this.bulletdamage = 50;
+        if (this.cursors.ONE.isDown) {
+          this.boughttext.setText('Bought Extra Bullet Damage');
+        }
+        if (this.boughtbulletdamagebool === false) {
+          this.boughtbulletdamagebool = true;
+          this.bought1booltest = true;
+          this.dba -= 50;
+          console.log(this.dba);
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.ONE.isDown && this.dba <= 50 && this.boughtbulletdamagebool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.TWO.isDown && this.dba >= 50) && !this.boughthealthboostbool) {
+        this.yourhealth = 125;
+        if (this.cursors.TWO.isDown) {
+          this.boughttext.setText('Bought Increased Health');
+        }
+        if (this.boughthealthboostbool === false) {
+          this.boughthealthboostbool = true;
+          this.bought2booltest = true;
+          this.dba -= 50;
+          this.health = this.yourhealth;
+          this.dbatext.setText(`DBA:${this.dba}`);
+          this.healthtext.setText(`Health:${this.health}`);
+        }
+      } else if (this.cursors.TWO.isDown && this.dba <= 50 && this.boughthealthboostbool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.THREE.isDown && this.dba >= 75) && !this.boughtdbaboostbool) {
+        this.dbamultiplier = 2;
+        if (this.cursors.THREE.isDown) {
+          this.boughttext.setText('Bought Extra DBA Per Hit');
+        }
+        if (this.boughtdbaboostbool === false) {
+          this.boughtdbaboostbool = true;
+          this.bought3booltest = true;
+
+          this.dba -= 75;
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.THREE.isDown && this.dba <= 75 && this.boughtdbaboostbool === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if ((this.cursors.FOUR.isDown && this.dba >= 100) && !this.boughtcameraheight) {
+        this.minimap.setZoom(0.08);
+        if (this.cursors.FOUR.isDown) {
+          this.boughttext.setText('Bought Expanded Minimap');
+        }
+        if (this.boughtcameraheight === false) {
+          this.boughtcameraheight = true;
+          this.bought4booltest = true;
+          this.dba -= 100;
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      } else if (this.cursors.FOUR.isDown && this.dba <= 100 && this.boughtcameraheight === false) {
+        this.notenoughmoney.setText('Not enough DBA');
+      }
+      if (this.health <= 0) {
+        this.ship.x = Math.random() * ((this.game.canvas.width * MAP_VIEW_MULT - 50) - 50) + 50;
+        this.ship.y = Math.random() * ((this.game.canvas.height * MAP_VIEW_MULT - 50) - 50) + 50;
+        this.health = 100;
+        this.healthtext.setText(`Health:${this.health}`);
         this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
       }
       if (this.ship.alpha < 1) {
@@ -366,6 +638,17 @@ class GameScene extends Scene {
         y: this.ship.y,
         rotation: this.ship.rotation,
       };
+    }
+    const top = this.hsv[this.i].color;
+    const bottom = this.hsv[359 - this.i].color;
+
+    this.gameendtext.setTint(top, top, bottom, bottom);
+    this.gameendtext.setTint(top, bottom, top, bottom);
+
+    this.i += 1;
+
+    if (this.i === 360) {
+      this.i = 0;
     }
   }
 }

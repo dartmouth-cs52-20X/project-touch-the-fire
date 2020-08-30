@@ -101,11 +101,11 @@ nav ul {
 
 .power-up-menu-container {
   position: absolute;
-  left:.5%;
-  top: 0%;
-  height: 25%;
-  width: 100%;
-
+  left:80%;
+  top: 5%;
+  height:40%;
+  width: 20%;
+  z-index: 2;
 }
 
 .power-up-menu {
@@ -115,7 +115,7 @@ nav ul {
 
 .power-up-menu div h1, .power-up-menu div h3 {
   text-align: center;
-  color: white;
+  color: black;
 }
 
 .power-up-items {
@@ -123,6 +123,7 @@ nav ul {
   flex-direction: column;
   align-items: flex-end;
   height: 100%;
+  margin-left: .6em;
 }
 
 .powerup-row {
@@ -141,11 +142,16 @@ nav ul {
 }
 
 .powerup-item img {
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 80%;
 }
 
-// // Styling the chat
+.powerup-item img:hover {
+  border-color: goldenrod;
+  border-style: solid;
+}
+
+// Styling the chat
 .chat-wrapper {
   margin: 0;
   padding: 0;
@@ -155,8 +161,9 @@ nav ul {
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-end;
-  background-color: dimgray;
+  background-color: gainsboro;
   border: 2px solid black;
+  z-index: 1;
 }
 
 .message-input-wrapper {
@@ -171,8 +178,8 @@ nav ul {
   font-size: 18px;
 
   input {
-    width: 85%;
-    font-size: 18px;
+    width: 80%;
+    font-size: 15px;
   }
 }
 
@@ -185,15 +192,8 @@ nav ul {
   scroll-snap-type: y proximity;
 }
 
-.scroller {
-  width: 100%;
-  padding: 3px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  position: static;
-  scroll-snap-align: end;
+.messages-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .message-wrapper {
@@ -220,11 +220,11 @@ nav ul {
 
 .message-text {
   font-size: 18px;
-  color: white;
+  color: black;
   text-align: left;
 }
 
-.game-wrapper .chat-wrapper{
+.game-wrapper .chat-wrapper {
   position: absolute;
   left:80%;
   top: 5%;
@@ -233,6 +233,28 @@ nav ul {
   margin: 0;
   padding: 0;
 }
+
+// #music-toggle-on {
+//   text-align: center;
+//   border-radius: 10px;
+//   border: 1px solid black;
+//   background-color: rgb(151, 196, 151);
+// }
+
+// #music-toggle-off {
+//   text-align: center;
+//   border-radius: 10px;
+//   border: 1px solid black;
+//   background-color: rgb(243, 186, 184);
+// }
+
+// #music-on {
+//   color: black;
+// }
+
+// #music-off {
+//   color: black;
+// }
 
 #lb-entry{
   display: flex;
@@ -253,10 +275,13 @@ nav ul {
 }
 
 #lb-page{
+  background-size: cover;
+  background-image: url(./assets/main-background.png);
+  // background-size: 100vw 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10vw 10vw;
+  // margin: 10vw 10vw;
 }
 
 #leaderboard-top{
@@ -268,6 +293,16 @@ nav ul {
   width: 80%;
   height: 80%;
   padding: 2vw 0 2vw 0;
+}
+
+#lb_buttons {
+  border-color: black;
+  border-style: solid;
+  background-color: cadetblue;
+}
+
+#lb_buttons:hover{
+  background-color: dodgerblue;
 }
 
 #lb-title {
@@ -304,4 +339,23 @@ nav ul {
   background-color: rgba($color: red, $alpha: 0.3);
   padding: 20px;
   border-radius: 20px;
+}
+
+// Styling the queueing page
+.queue-page-wrapper {
+  background-image: url(./assets/green.png);
+  background-size: 100vw 95vh;
+  display: flex;
+  width: 100%;
+  height: 95vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    margin-top: 20px;
+  }
+  button {
+    margin-top: 20px;
+  }
 }

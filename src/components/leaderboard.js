@@ -11,14 +11,19 @@ import Entry from './leaderboard_entry';
 class Leaderboard extends Component {
   constructor(props) {
     super(props);
+    this.generateLeaderboardDBA = this.generateLeaderboardDBA.bind(this);
+    this.generateLeaderboardWins = this.generateLeaderboardWins.bind(this);
+    this.generateLeaderboardShots = this.generateLeaderboardShots.bind(this);
 
     this.state = {
       users: Map(),
+      leaderboard: null,
     };
   }
 
   componentDidMount = () => {
     this.initialize();
+    this.generateLeaderboardWins();
   }
 
   initialize() {
@@ -31,44 +36,116 @@ class Leaderboard extends Component {
     });
   }
 
-  sort(array) {
+  sortWin() {
+    const array = [];
     // eslint-disable-next-line consistent-return
     console.log(this.state.users);
     this.state.users.entrySeq().forEach((element) => {
       let i = 0;
       if (array.length == 0) {
-        array.push([element[1].username, element[1].score]);
+        array.push([element[1].username, element[1].wins]);
       }
       while (i < array.length) {
-        console.log([element[1].score, array[i][1]]);
-        if (element[1].score >= array[i][1]) {
-          array.splice(i, 0, [element[1].username, element[1].score]);
+        console.log([element[1].wins, array[i][1]]);
+        if (element[1].wins >= array[i][1]) {
+          array.splice(i, 0, [element[1].username, element[1].wins]);
           break;
         } else {
           i += 1;
           if (i == array.size) {
-            array.push([element[1].username, element[1].score]);
+            array.push([element[1].username, element[1].wins]);
           }
         }
       }
     });
+    return array;
   }
 
-  topN() {
-    const leaderboard = [];
-    this.sort(leaderboard);
-    return leaderboard;
+  sortdba() {
+    const array = [];
+    // eslint-disable-next-line consistent-return
+    console.log(this.state.users);
+    this.state.users.entrySeq().forEach((element) => {
+      let i = 0;
+      if (array.length == 0) {
+        array.push([element[1].username, element[1].dba]);
+      }
+      while (i < array.length) {
+        console.log([element[1].dba, array[i][1]]);
+        if (element[1].dba >= array[i][1]) {
+          array.splice(i, 0, [element[1].username, element[1].dba]);
+          break;
+        } else {
+          i += 1;
+          if (i == array.size) {
+            array.push([element[1].username, element[1].dba]);
+          }
+        }
+      }
+    });
+    return array;
   }
 
-  generateLeaderboard() {
+  sortshots() {
+    const array = [];
+    // eslint-disable-next-line consistent-return
+    console.log(this.state.users);
+    this.state.users.entrySeq().forEach((element) => {
+      let i = 0;
+      if (array.length == 0) {
+        array.push([element[1].username, element[1].shots]);
+      }
+      while (i < array.length) {
+        console.log([element[1].shots, array[i][1]]);
+        if (element[1].shots >= array[i][1]) {
+          array.splice(i, 0, [element[1].username, element[1].shots]);
+          break;
+        } else {
+          i += 1;
+          if (i == array.size) {
+            array.push([element[1].username, element[1].shots]);
+          }
+        }
+      }
+    });
+    return array;
+  }
+
+  generateLeaderboardWins() {
     if (this.state.users.size > 0) {
       let i = 0;
-      const entries = this.topN().map((element) => {
+      const entries = this.sortWin().map((element) => {
         i += 1;
         return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
       });
       console.log(entries);
-      return entries;
+      this.setState({ leaderboard: entries });
+    }
+    return null;
+  }
+
+  generateLeaderboardDBA() {
+    if (this.state.users.size > 0) {
+      let i = 0;
+      const entries = this.sortdba().map((element) => {
+        i += 1;
+        return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
+      });
+      console.log(entries);
+      this.setState({ leaderboard: entries });
+    }
+    return null;
+  }
+
+  generateLeaderboardShots() {
+    if (this.state.users.size > 0) {
+      let i = 0;
+      const entries = this.sortshots().map((element) => {
+        i += 1;
+        return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
+      });
+      console.log(entries);
+      this.setState({ leaderboard: entries });
     }
     return null;
   }
@@ -79,8 +156,13 @@ class Leaderboard extends Component {
         <div id="lb-title">
           <h1>Leaderboard</h1>
         </div>
+        <div id="lb_buttons">
+          <p onClick={this.generateLeaderboardDBA}>DBA</p>
+          <p onClick={this.generateLeaderboardWins}>Wins</p>
+          <p onClick={this.generateLeaderboardShots}>Shots Fired</p>
+        </div>
         <div id="leaderboard-top">
-          {this.generateLeaderboard()}
+          {this.leaderboard}
         </div>
 
       </div>
