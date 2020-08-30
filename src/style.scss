@@ -31,13 +31,6 @@ nav ul {
   list-style-type: none;
 }
 
-#nav-signout {
-  border-radius: 20px;
-  border: none;
-  background: rgba($color: #000000, $alpha: 0.5);
-  padding: 8px;
-}
-
 #nav-title{
   text-decoration: none;
   font-family: 'Ribeye', cursive;
@@ -63,7 +56,7 @@ nav ul {
   padding: 10px 0px;
 }
 
-.button-var1, .button-var2 {
+.button-var1, .button-var2, .button-var3 {
   border-radius: 20px;
   border: none;
   padding: 5px 20px;
@@ -76,6 +69,10 @@ nav ul {
 
 .button-var2 {
   background: rgba($color: #C4C4C4, $alpha: 0.8);
+}
+
+.button-var3 {
+  background: rgba($color: #000000, $alpha: 0.5);
 }
 
 .landing-page-alt {
@@ -344,16 +341,28 @@ nav ul {
 }
 
 #instructions-page{
+  background-image: url(./assets/green.png);
+  background-size: 100vw 95vh;
   width: 100%;
   height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#instructions-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  width: 80vw;
+  height: 85vh;
+  background-color: rgba($color: #C4C4C4, $alpha: 0.8);
+  border-radius: 20px;
 }
 
-#instructions-page > div {
+#instructions-wrapper > div {
   padding: 10px 50px;
 }
 
