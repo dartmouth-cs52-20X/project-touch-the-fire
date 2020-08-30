@@ -40,7 +40,6 @@ class Leaderboard extends Component {
   sortWin() {
     const array = [];
     // eslint-disable-next-line consistent-return
-    console.log(this.state.users);
     this.state.users.entrySeq().forEach((element) => {
       let i = 0;
       if (array.length == 0) {
@@ -48,7 +47,6 @@ class Leaderboard extends Component {
         i += 1;
       }
       while (i < array.length) {
-        console.log([element[1].wins, array[i][1]]);
         if (element[1].wins >= array[i][1]) {
           array.splice(i, 0, [element[1].username, element[1].wins]);
           break;
@@ -56,18 +54,17 @@ class Leaderboard extends Component {
           i += 1;
           if (i == array.length) {
             array.push([element[1].username, element[1].wins]);
+            i += 1;
           }
         }
       }
     });
-    console.log(array);
     return array;
   }
 
   sortdba() {
     const array = [];
     // eslint-disable-next-line consistent-return
-    console.log(this.state.users);
     this.state.users.entrySeq().forEach((element) => {
       let i = 0;
       if (array.length == 0) {
@@ -75,28 +72,25 @@ class Leaderboard extends Component {
         i += 1;
       }
       while (i < array.length) {
-        console.log([element[1].dba, array[i][1]]);
         if (element[1].dba >= array[i][1]) {
           array.splice(i, 0, [element[1].username, element[1].dba]);
           console.log(array);
           break;
         } else {
           i += 1;
-          console.log(i, array.length);
           if (i == array.length) {
             array.push([element[1].username, element[1].dba]);
+            i += 1;
           }
         }
       }
     });
-    console.log(array);
     return array;
   }
 
   sortshots() {
     const array = [];
     // eslint-disable-next-line consistent-return
-    console.log(this.state.users);
     this.state.users.entrySeq().forEach((element) => {
       let i = 0;
       if (array.length == 0) {
@@ -104,7 +98,6 @@ class Leaderboard extends Component {
         i += 1;
       }
       while (i < array.length) {
-        console.log([element[1].shots, array[i][1]]);
         if (element[1].shots >= array[i][1]) {
           array.splice(i, 0, [element[1].username, element[1].shots]);
           break;
@@ -112,11 +105,11 @@ class Leaderboard extends Component {
           i += 1;
           if (i == array.length) {
             array.push([element[1].username, element[1].shots]);
+            i += 1;
           }
         }
       }
     });
-    console.log(array);
     return array;
   }
 
@@ -127,7 +120,6 @@ class Leaderboard extends Component {
         i += 1;
         return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
       });
-      console.log(entries);
       this.setState({ leaderboard: entries });
     }
     return null;
@@ -140,7 +132,6 @@ class Leaderboard extends Component {
         i += 1;
         return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
       });
-      console.log(entries);
       this.setState({ leaderboard: entries });
     }
     return null;
@@ -153,14 +144,15 @@ class Leaderboard extends Component {
         i += 1;
         return <Entry key={i} rank={i} username={element[0]} score={element[1]} />;
       });
-      console.log(entries);
       this.setState({ leaderboard: entries });
     }
     return null;
   }
 
   render() {
-    console.log(this.state.leaderboard);
+    if (this.state.leaderboard == null) {
+      this.generateLeaderboardWins();
+    }
     return (
       <div id="lb-page">
         <div id="lb-title">
