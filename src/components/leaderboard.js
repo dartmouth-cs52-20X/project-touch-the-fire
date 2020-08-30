@@ -44,6 +44,7 @@ class Leaderboard extends Component {
       let i = 0;
       if (array.length == 0) {
         array.push([element[1].username, element[1].wins]);
+        i += 1;
       }
       while (i < array.length) {
         console.log([element[1].wins, array[i][1]]);
@@ -52,12 +53,13 @@ class Leaderboard extends Component {
           break;
         } else {
           i += 1;
-          if (i == array.size) {
+          if (i == array.length) {
             array.push([element[1].username, element[1].wins]);
           }
         }
       }
     });
+    console.log(array);
     return array;
   }
 
@@ -69,20 +71,24 @@ class Leaderboard extends Component {
       let i = 0;
       if (array.length == 0) {
         array.push([element[1].username, element[1].dba]);
+        i += 1;
       }
       while (i < array.length) {
         console.log([element[1].dba, array[i][1]]);
         if (element[1].dba >= array[i][1]) {
           array.splice(i, 0, [element[1].username, element[1].dba]);
+          console.log(array);
           break;
         } else {
           i += 1;
-          if (i == array.size) {
+          console.log(i, array.length);
+          if (i == array.length) {
             array.push([element[1].username, element[1].dba]);
           }
         }
       }
     });
+    console.log(array);
     return array;
   }
 
@@ -94,6 +100,7 @@ class Leaderboard extends Component {
       let i = 0;
       if (array.length == 0) {
         array.push([element[1].username, element[1].shots]);
+        i += 1;
       }
       while (i < array.length) {
         console.log([element[1].shots, array[i][1]]);
@@ -102,12 +109,13 @@ class Leaderboard extends Component {
           break;
         } else {
           i += 1;
-          if (i == array.size) {
+          if (i == array.length) {
             array.push([element[1].username, element[1].shots]);
           }
         }
       }
     });
+    console.log(array);
     return array;
   }
 
@@ -151,6 +159,7 @@ class Leaderboard extends Component {
   }
 
   render() {
+    console.log(this.state.leaderboard);
     return (
       <div id="lb-page">
         <div id="lb-title">
@@ -162,9 +171,8 @@ class Leaderboard extends Component {
           <p onClick={this.generateLeaderboardShots}>Shots Fired</p>
         </div>
         <div id="leaderboard-top">
-          {this.leaderboard}
+          {this.state.leaderboard}
         </div>
-
       </div>
     );
   }
