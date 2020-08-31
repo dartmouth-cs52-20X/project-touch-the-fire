@@ -41,12 +41,12 @@ class SignUp extends Component {
         this.props.history.push('/');
       }).catch((err) => {
         console.log(err);
-        document.getElementById('sign-in-failed').classList.remove('hidden');
-        document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
+        document.getElementById('sign-up-failed').classList.remove('hidden');
+        document.getElementById('sign-up-failed').classList.add('sign-in-up-fail');
       });
     } else {
-      document.getElementById('sign-in-failed').classList.remove('hidden');
-      document.getElementById('sign-in-failed').classList.add('sign-in-up-fail');
+      document.getElementById('sign-up-failed').classList.remove('hidden');
+      document.getElementById('sign-up-failed').classList.add('sign-in-up-fail');
     }
   }
 
@@ -69,7 +69,7 @@ class SignUp extends Component {
           <div><input type="text" placeholder="password" onChange={this.handlePasswordChange} /></div>
           <NavLink to="/"><button type="button" onClick={this.handleSignUpPress} className="button-var1">Sign Up</button></NavLink>
           <p>Already have an account? Sign in <NavLink to="/signin" className="here-link">here!</NavLink></p>
-          <div id="sign-in-failed" className="hidden">
+          <div id="sign-up-failed" className="hidden">
             <h2>Sign Up Failed</h2>
             <h4>Ensure your email is valid</h4>
             <h4>Ensure you chose a username</h4>
