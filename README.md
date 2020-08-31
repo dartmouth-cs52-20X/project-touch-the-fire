@@ -20,12 +20,14 @@ The game consists of a 3 minute round in which each team attempts to control the
 
 ## Game Instructions
 Basic Movement:
-* Forward: W, Left: A, Right: D, Back: S
+* Up: W, Left: A, Right: D, Down: S
+
 Advanced Movement:
 * Rotate Left: J, Rotate Right: L, Forward: I, Back: K
+
 Other Controls:
 * Shoot: SPACE
-* Mute Music: M
+* Mute Sounds: M
 
 ## Architecture
 
