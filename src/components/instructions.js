@@ -18,7 +18,7 @@ class Instructions extends Component {
             <p>
               TouchTheFire is a game with up to 6 players split into 2 teams - red and blue. The goal of each team is to amass as many points as possible.
               Points can be scored by touching the fire in the center of the map. The more players on your team that are touching the fire at once, the faster you score points.
-              You can send players of the opposite team back to the outskirts of the Green by hitting them with your projectiles.
+              You can eliminate players of the opposite team by hitting them with your projectiles.
               The team with the most points after 3 minutes wins the round!
             </p>
           </div>
