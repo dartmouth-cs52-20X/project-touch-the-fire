@@ -57,8 +57,8 @@ class GameScene extends Scene {
       email = 'devonc2000@gmail.com';
       username = 'decheftw';
     }
-    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    this.socket = io('localhost:9090');
+    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    // this.socket = io('localhost:9090');
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.socket.emit('isgame', { x: 1 });
@@ -114,53 +114,71 @@ class GameScene extends Scene {
       this.blueScoreText.setText(`Blue: ${scores.blue}`);
       this.redScoreText.setText(`Red: ${scores.red}`);
     });
+    this.pickedupstarone = false;
     this.socket.on('starLocation', (starLocation) => {
       if (this.star) this.star.destroy();
+      this.pickedupstarone = false;
       this.star = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.star, () => {
-        this.pickupsound.play();
-        this.socket.emit('starCollected');
-        this.dba += 3;
-        this.dbatext.setText(`DBA:${this.dba}`);
-      });
-    });
-
-    this.socket.on('starLocationtwo', (starLocation) => {
-      if (this.startwo) this.startwo.destroy();
-      this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
-      this.physics.add.overlap(this.ship, this.startwo, () => {
-        this.pickupsound.play();
-        this.socket.emit('starCollectedtwo');
-        this.dba += 3;
-        this.dbatext.setText(`DBA:${this.dba}`);
-      });
-    });
-
-    this.socket.on('keystoneLocation', (keystoneLocation) => {
-      if (this.keystone) this.keystone.destroy();
-      this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
-      this.physics.add.overlap(this.ship, this.keystone, () => {
-        this.pickupsound.play();
-        this.socket.emit('keystoneCollected');
-        this.dba += 2;
-        this.dbatext.setText(`DBA:${this.dba}`);
-        if (this.health < 100) {
-          this.health += 15;
-          this.healthtext.setText(`Health:${this.health}`);
+        if (this.pickedupstarone === false) {
+          this.pickedupstarone = true;
+          this.pickupsound.play();
+          this.socket.emit('starCollected');
+          this.dba += 10;
+          this.dbatext.setText(`DBA:${this.dba}`);
         }
       });
     });
+    this.pickedupstartwo = false;
+    this.socket.on('starLocationtwo', (starLocation) => {
+      if (this.startwo) this.startwo.destroy();
+      this.pickedupstartwo = false;
+      this.startwo = this.physics.add.image(starLocation.x, starLocation.y, 'money').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.startwo, () => {
+        if (this.pickedupstartwo === false) {
+          this.pickedupstartwo = true;
+          this.pickupsound.play();
+          this.socket.emit('starCollectedtwo');
+          this.dba += 10;
+          this.dbatext.setText(`DBA:${this.dba}`);
+        }
+      });
+    });
+    this.pickedupkeystone = false;
+    this.socket.on('keystoneLocation', (keystoneLocation) => {
+      if (this.keystone) this.keystone.destroy();
+      this.pickedupkeystone = false;
+      this.keystone = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
+      this.physics.add.overlap(this.ship, this.keystone, () => {
+        if (this.pickedupkeystone === false) {
+          this.pickedupkeystone = true;
+          this.pickupsound.play();
+          this.socket.emit('keystoneCollected');
+          this.dba += 5;
+          this.dbatext.setText(`DBA:${this.dba}`);
+          if (this.health < 100) {
+            this.health += 15;
+            this.healthtext.setText(`Health:${this.health}`);
+          }
+        }
+      });
+    });
+    this.pickedupkeystonetwo = false;
     this.socket.on('keystoneLocationtwo', (keystoneLocation) => {
       if (this.keystonetwo) this.keystonetwo.destroy();
+      this.pickedupkeystonetwo = false;
       this.keystonetwo = this.physics.add.image(keystoneLocation.x, keystoneLocation.y, 'keystone').setDisplaySize(53, 40);
       this.physics.add.overlap(this.ship, this.keystonetwo, () => {
-        this.pickupsound.play();
-        this.socket.emit('keystoneCollectedtwo');
-        this.dba += 2;
-        this.dbatext.setText(`DBA:${this.dba}`);
-        if (this.health < 100) {
-          this.health += 15;
-          this.healthtext.setText(`Health:${this.health}`);
+        if (this.pickedupkeystonetwo === false) {
+          this.pickedupkeystonetwo = true;
+          this.pickupsound.play();
+          this.socket.emit('keystoneCollectedtwo');
+          this.dba += 5;
+          this.dbatext.setText(`DBA:${this.dba}`);
+          if (this.health < 100) {
+            this.health += 15;
+            this.healthtext.setText(`Health:${this.health}`);
+          }
         }
       });
     });
@@ -343,6 +361,9 @@ class GameScene extends Scene {
     this.kickedforinactivity = this.add.text((this.game.canvas.width / 2), (this.game.canvas.height / 2) - 60, '', { fontSize: '35px', fill: '#fff' }).setOrigin(0.5).setScrollFactor(0);
     this.socket.on('kicked', () => {
       this.kickedforinactivity.setText('Kicked for inactivity, refresh to rejoin');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
     });
   }
 
