@@ -57,8 +57,8 @@ class GameScene extends Scene {
       email = 'devonc2000@gmail.com';
       username = 'decheftw';
     }
-    this.socket = io('https://touch-the-fire-api.herokuapp.com/');
-    // this.socket = io('localhost:9090');
+    // this.socket = io('https://touch-the-fire-api.herokuapp.com/');
+    this.socket = io('localhost:9090');
     console.log(this.socket);
     this.socket.on('connect', () => { console.log('socket.io connected'); });
     this.socket.emit('isgame', { x: 1 });
